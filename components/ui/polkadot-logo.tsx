@@ -25,7 +25,7 @@ export function PolkadotLogo({
       : "/Polkadot_Logo_Horizontal_Pink_Black.svg";
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center h-8">
       {withPoweredBy && <span className="text-sm font-light">Powered by</span>}
       <Image src={logo} alt="Polkadot Logo" width={100} height={28} />
     </div>

@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --animate-spin-slow: spin 2s ease-in-out infinite;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -76,6 +80,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --polkadot-pink: #ff2670;
 }
 
 .dark {
@@ -119,4 +125,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+h1 {
+  font-family: var(--font-unbounded);
 }

@@ -16,7 +16,9 @@ import { Identicon } from "@polkadot/react-identicon";
 import { allSubstrateWallets, SubstrateWalletPlatform } from "./wallets";
 import { isMobile } from "@/lib/is-mobile";
 import Image from "next/image";
-
+import { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
+import { logout } from "@/actions/auth";
+import { AnimatePresence, motion } from "framer-motion";
 export function WalletSelect() {
   const {
     accounts,
@@ -45,26 +47,50 @@ export function WalletSelect() {
         : 0
     );
 
+  const handleAccountSelect = async (account: InjectedPolkadotAccount) => {
+    if (account.address !== selectedAccount?.address) {
+      setSelectedAccount(account);
+      await logout();
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="default"
-          onClick={initiateConnection}
-          className="transition-[min-width] duration-300 min-w-[100px]"
+        <motion.div
+          layout
+          transition={{
+            duration: 0.3,
+          }}
         >
-          <Wallet className="w-4 h-4" />
-          <span className="max-w-[100px] truncate">
-            {selectedAccount?.name}
-          </span>
-          {selectedAccount?.address && (
-            <Identicon
-              value={selectedAccount?.address}
-              size={24}
-              theme="polkadot"
-            />
-          )}
-        </Button>
+          <Button
+            variant="default"
+            onClick={initiateConnection}
+            className="h-9 overflow-hidden"
+          >
+            <Wallet className="w-4 h-4 flex-shrink-0" />
+            <AnimatePresence mode="wait">
+              {selectedAccount?.name && (
+                <motion.span
+                  className="max-w-[100px] truncate"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {selectedAccount?.name}
+                </motion.span>
+              )}
+            </AnimatePresence>
+            {selectedAccount?.address && (
+              <Identicon
+                value={selectedAccount?.address}
+                size={24}
+                theme="polkadot"
+              />
+            )}
+          </Button>
+        </motion.div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0">
         <DialogHeader className="p-4 flex flex-row items-center justify-start">
@@ -159,7 +185,7 @@ export function WalletSelect() {
                         ? "bg-accent"
                         : ""
                     )}
-                    onClick={() => setSelectedAccount(account)}
+                    onClick={() => handleAccountSelect(account)}
                   >
                     <Identicon
                       className="w-[32px] h-[32px] mr-3 [&>svg]:!h-full [&>svg]:!w-full"

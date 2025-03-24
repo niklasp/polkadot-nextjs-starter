@@ -11,7 +11,7 @@ export default function Nav() {
         <span className="text-[13px] font-light mr-1 -mt-1.5">App Starter</span>
       </Link>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 h-12">
         <ThemeToggle />
         <WalletSelect />
       </div>

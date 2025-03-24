@@ -1,6 +1,6 @@
 "use client";
 
-import { dot } from "@polkadot-api/descriptors";
+import { dot, pas } from "@polkadot-api/descriptors";
 import type { TypedApi } from "polkadot-api";
 
 export interface ChainConfig {
@@ -15,9 +15,16 @@ export type AvailableApis = TypedApi<typeof dot>;
 
 export const chainConfig: ChainConfig[] = [
   {
-    key: "dot",
-    name: "Polkadot",
-    descriptors: dot,
-    endpoints: ["wss://rpc.polkadot.io"],
+    key: "pas",
+    name: "Paseo",
+    descriptors: pas,
+    endpoints: ["wss://rpc.ibp.network/paseo"],
+    explorerUrl: "https://paseo.subscan.io/",
   },
+  // {
+  //   key: "dot",
+  //   name: "Polkadot",
+  //   descriptors: dot,
+  //   endpoints: ["wss://rpc.polkadot.io"],
+  // },
 ];

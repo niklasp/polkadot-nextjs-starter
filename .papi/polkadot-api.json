@@ -6,6 +6,11 @@
       "chain": "polkadot",
       "metadata": ".papi/metadata/dot.scale",
       "genesis": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+    },
+    "pas": {
+      "chain": "paseo",
+      "metadata": ".papi/metadata/pas.scale",
+      "genesis": "0x77afd6190f1554ad45fd0d31aee62aacc33c6db0ea801129acb813f913e0764f"
     }
   }
 }
