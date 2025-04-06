@@ -3,9 +3,7 @@
 import { useAccountBalance } from "@/hooks/use-account-balance";
 import { useChain } from "@/providers/chain-provider";
 import { formatBalance } from "@polkadot/util";
-import { WsEvent } from "polkadot-api/ws-provider/web";
 import { useMemo } from "react";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { Identicon } from "@polkadot/react-identicon";
 import {
   Card,
@@ -17,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatLastUpdated } from "../../lib/utils";
 import { WalletSelect } from "./wallet-select";
+import { usePolkadotExtension } from "@/providers/new-extension-provider";
 
 export function AccountBalance() {
   const accountBalance = useAccountBalance();
@@ -39,7 +38,7 @@ export function AccountBalance() {
 
     return formatBalance(accountBalance.free, {
       decimals: tokenDecimals,
-      withSi: false,
+      // withSi: false,
       withUnit: false,
     });
   }, [accountBalance?.free, tokenDecimals]);

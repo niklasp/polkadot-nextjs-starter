@@ -1,57 +1,52 @@
 "use client";
 
+import {
+  connectInjectedExtension,
+  InjectedExtension,
+} from "polkadot-api/pjs-signer";
 import { createContext, useContext } from "react";
 import { useSyncExternalStore } from "react";
 
-declare global {
-  interface Window {
-    injectedWeb3?: typeof window.injectedWeb3 | undefined;
-  }
-}
+const TestExtensionContext = createContext<InjectedExtension[]>([]);
 
-interface InjectedWeb3Context {
-  injectedWeb3: typeof window.injectedWeb3 | undefined;
-}
+function getExtensionsStore(): {
+  subscribe: (callback: () => void) => () => void;
+  getSnapshot: () => Map<string, InjectedExtension>;
+  getServerSnapshot: () => Map<string, InjectedExtension>;
+  onToggleExtension: (name: string) => Promise<void>;
+} {
+  let connectedExtensions = new Map<string, InjectedExtension>();
+  const getSnapshot = () => connectedExtensions;
 
-const TestExtensionContext = createContext<InjectedWeb3Context>({
-  injectedWeb3: undefined,
-});
+  const listeners = new Set<() => void>();
+  const update = () => {
+    connectedExtensions = new Map(connectedExtensions);
+    listeners.forEach((cb) => cb());
+  };
+  const subscribe = (cb: () => void) => {
+    listeners.add(cb);
+    return () => {
+      listeners.delete(cb);
+    };
+  };
 
-function subscribe(callback: () => void) {
-  // Most extensions inject on document ready
-  const documentLoadCheck = () => {
-    if (document.readyState === "complete") {
-      console.log("Document loaded");
-      callback();
+  const onToggleExtension = async (name: string) => {
+    if (connectedExtensions.has(name)) {
+      connectedExtensions.delete(name);
+      return update();
     }
+
+    const extension = await connectInjectedExtension(name);
+    connectedExtensions.set(name, extension);
+    update();
   };
 
-  // Backup check on window load
-  const windowLoadCheck = () => {
-    console.log("Window loaded");
-    callback();
+  return {
+    subscribe,
+    getSnapshot,
+    getServerSnapshot: () => connectedExtensions,
+    onToggleExtension,
   };
-
-  document.addEventListener("readystatechange", documentLoadCheck);
-  window.addEventListener("load", windowLoadCheck);
-
-  // Do an immediate check in case extension is already injected
-  if (window.injectedWeb3) callback();
-
-  return () => {
-    document.removeEventListener("readystatechange", documentLoadCheck);
-    window.removeEventListener("load", windowLoadCheck);
-  };
-}
-
-// Snapshot getter function
-function getSnapshot() {
-  return window?.injectedWeb3;
-}
-
-// Server snapshot (for SSR)
-function getServerSnapshot() {
-  return undefined;
 }
 
 export function TestExtensionProvider({
@@ -59,14 +54,15 @@ export function TestExtensionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const injectedWeb3 = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+  const extensionsStore = getExtensionsStore();
+  const selectedExtensions = useSyncExternalStore(
+    extensionsStore.subscribe,
+    extensionsStore.getSnapshot,
+    extensionsStore.getServerSnapshot
   );
 
   return (
-    <TestExtensionContext.Provider value={{ injectedWeb3 }}>
+    <TestExtensionContext.Provider value={[...selectedExtensions.values()]}>
       {children}
     </TestExtensionContext.Provider>
   );

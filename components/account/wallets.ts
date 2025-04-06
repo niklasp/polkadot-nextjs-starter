@@ -58,7 +58,11 @@ export const talisman: SubstrateWallet = {
 export const subwallet: SubstrateWallet = {
   id: "subwallet-js",
   name: "SubWallet",
-  platforms: [SubstrateWalletPlatform.Android, SubstrateWalletPlatform.iOS],
+  platforms: [
+    SubstrateWalletPlatform.Android,
+    SubstrateWalletPlatform.iOS,
+    SubstrateWalletPlatform.Browser,
+  ],
   urls: {
     website: "https://subwallet.app/",
     chromeExtension:

@@ -6,6 +6,7 @@ import { PolkadotLogo } from "../ui/polkadot-logo";
 import { ThemeToggle } from "./theme-toggle";
 import { WalletSelect } from "../account/wallet-select";
 import { ChainSelect } from "../chain/chain-select";
+import { NewWalletSelect } from "../account/new-wallet-select";
 
 export interface NavItem {
   title: string;
@@ -57,7 +58,7 @@ export function NavBar() {
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
             <ChainSelect />
-            <WalletSelect />
+            {/* <WalletSelect /> */}
             <NavMobileControl items={navItems} />
           </div>
 
@@ -105,7 +106,8 @@ export function NavBar() {
           <div className="hidden md:flex gap-1 items-center">
             <ThemeToggle />
             <ChainSelect />
-            <WalletSelect />
+            {/* <WalletSelect /> */}
+            <NewWalletSelect />
           </div>
         </div>
       </div>
