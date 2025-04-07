@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { trimAddress } from "@/lib/utils";
-import { usePolkadotExtension } from "@/providers/new-extension-provider";
+import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { connectInjectedExtension } from "polkadot-api/pjs-signer";
 
 export default function Test() {

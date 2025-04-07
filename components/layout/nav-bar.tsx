@@ -5,7 +5,7 @@ import { NavMobileControl } from "./nav-mobile-control";
 import { PolkadotLogo } from "../ui/polkadot-logo";
 import { ThemeToggle } from "./theme-toggle";
 import { ChainSelect } from "../chain/chain-select";
-import { NewWalletSelect } from "../account/new-wallet-select";
+import { WalletSelect } from "../account/wallet-select";
 
 export interface NavItem {
   title: string;
@@ -57,7 +57,7 @@ export function NavBar() {
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
             <ChainSelect />
-            <NewWalletSelect />
+            <WalletSelect />
             <NavMobileControl items={navItems} />
           </div>
 
@@ -105,7 +105,7 @@ export function NavBar() {
           <div className="hidden md:flex gap-1 items-center">
             <ThemeToggle />
             <ChainSelect />
-            <NewWalletSelect />
+            <WalletSelect />
           </div>
         </div>
       </div>

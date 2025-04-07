@@ -1,7 +1,7 @@
 "use client";
 
 import { useChain } from "@/providers/chain-provider";
-import { usePolkadotExtension } from "@/providers/new-extension-provider";
+import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { useEffect, useState } from "react";
 
 export type AccountBalance = {

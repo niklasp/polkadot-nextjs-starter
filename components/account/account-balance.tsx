@@ -2,7 +2,6 @@
 
 import { useAccountBalance } from "@/hooks/use-account-balance";
 import { useChain } from "@/providers/chain-provider";
-import { formatBalance } from "@polkadot/util";
 import { useMemo } from "react";
 import { Identicon } from "@polkadot/react-identicon";
 import {
@@ -14,8 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatLastUpdated } from "../../lib/utils";
+import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { WalletSelect } from "./wallet-select";
-import { usePolkadotExtension } from "@/providers/new-extension-provider";
+import { formatBalance } from "@/lib/format-balance";
 
 export function AccountBalance() {
   const accountBalance = useAccountBalance();
@@ -29,41 +29,53 @@ export function AccountBalance() {
         tokenDecimals: 10,
         tokenSymbol: "PAS",
       },
-    [activeChain?.properties]
+    [activeChain?.properties],
   );
 
   // Format the balance for display
   const formattedBalance = useMemo(() => {
     if (accountBalance?.free === undefined) return null;
 
-    return formatBalance(accountBalance.free, {
+    return formatBalance({
+      value: accountBalance.free,
       decimals: tokenDecimals,
-      // withSi: false,
-      withUnit: false,
+      options: {
+        nDecimals: 4,
+      },
     });
   }, [accountBalance?.free, tokenDecimals]);
 
   // Format the last updated time
   const lastUpdatedText = useMemo(
     () => formatLastUpdated(accountBalance?.lastUpdated),
-    [accountBalance?.lastUpdated]
+    [accountBalance?.lastUpdated],
   );
+
+  // Create a memoized title to avoid duplication
+  const cardTitle = useMemo(
+    () => `Free Balance on ${activeChain?.name || "Chain"}`,
+    [activeChain?.name],
+  );
+
+  // Determine the current state
+  const isLoading = isInitializing || (selectedAccount && !accountBalance);
+  const hasNoAccount = !selectedAccount;
 
   return (
     <Card
       className={cn(
         "w-full max-w-sm relative flex flex-col",
-        "border-2 rounded-xl"
+        "border-2 rounded-xl",
       )}
     >
-      {/* Show loading state during initialization OR while getting balance for connected account */}
-      {isInitializing || (selectedAccount && !accountBalance) ? (
+      <CardHeader>
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          Free Balance on {activeChain?.name}
+        </CardTitle>
+      </CardHeader>
+
+      {isLoading ? (
         <>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Free Balance on {activeChain?.name}
-            </CardTitle>
-          </CardHeader>
           <CardContent>
             <div className="min-h-[40px] flex items-center">
               <div className="w-full flex justify-between items-center">
@@ -75,20 +87,10 @@ export function AccountBalance() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <span>Last updated:</span>
-              <Skeleton className="h-3 w-12 ml-1" />
-            </div>
-          </CardFooter>
+          <LastUpdatedFooter lastUpdatedText={null} />
         </>
-      ) : !selectedAccount ? (
+      ) : hasNoAccount ? (
         <>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Free Balance on {activeChain?.name}
-            </CardTitle>
-          </CardHeader>
           <CardContent className="flex items-center justify-center flex-1">
             <WalletSelect
               className="w-full max-w-sm"
@@ -103,14 +105,9 @@ export function AccountBalance() {
         </>
       ) : (
         <>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Free Balance on {activeChain?.name}
-            </CardTitle>
-          </CardHeader>
           <CardContent>
             <div className="min-h-[40px] flex items-center">
-              <div className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center justify-between flex-row gap-2 flex-wrap">
                 <div className="rounded-full flex items-center justify-center gap-2">
                   <Identicon
                     value={selectedAccount.address}
@@ -127,14 +124,29 @@ export function AccountBalance() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <span>Last updated:</span>
-              <span className="ml-1">{lastUpdatedText}</span>
-            </div>
-          </CardFooter>
+          <LastUpdatedFooter lastUpdatedText={lastUpdatedText} />
         </>
       )}
     </Card>
+  );
+}
+
+// Last updated footer component
+function LastUpdatedFooter({
+  lastUpdatedText,
+}: {
+  lastUpdatedText: string | null;
+}) {
+  return (
+    <CardFooter>
+      <div className="flex items-center text-xs text-muted-foreground">
+        <span>Last updated:</span>
+        {lastUpdatedText ? (
+          <span className="ml-1">{lastUpdatedText}</span>
+        ) : (
+          <Skeleton className="h-3 w-12 ml-1" />
+        )}
+      </div>
+    </CardFooter>
   );
 }

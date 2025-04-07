@@ -1,6 +1,6 @@
 import { Button } from "../ui/button";
 import { ViewNavigationProps } from "../ui/multi-view-dialog";
-import { usePolkadotExtension } from "@/providers/new-extension-provider";
+import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { SubstrateWalletPlatform } from "./wallets";
 import { isMobile } from "@/lib/is-mobile";
 import { allSubstrateWallets } from "./wallets";
