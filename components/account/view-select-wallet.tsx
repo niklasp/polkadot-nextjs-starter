@@ -19,21 +19,21 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
       isMobile()
         ? wallet.platforms.includes(SubstrateWalletPlatform.Android) ||
           wallet.platforms.includes(SubstrateWalletPlatform.iOS)
-        : wallet.platforms.includes(SubstrateWalletPlatform.Browser)
+        : wallet.platforms.includes(SubstrateWalletPlatform.Browser),
     )
     .sort((a, b) =>
       availableExtensions.includes(a.id)
         ? -1
         : availableExtensions.includes(b.id)
           ? 1
-          : 0
+          : 0,
     );
 
   return (
     <div className="flex flex-col gap-2">
       {systemWallets.map((wallet, index) => {
         const connectedExtension = selectedExtensions.find(
-          (ext) => ext.name === wallet.id
+          (ext) => ext.name === wallet.id,
         );
         const isConnected = !!connectedExtension;
         const accountCount =
@@ -58,7 +58,7 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               <div
                 className={cn(
                   "w-0 h-0 rounded-full bg-green-500 animate-pulse transition-all duration-300 ease-in-out",
-                  isConnected && "w-2 h-2 mr-2"
+                  isConnected && "w-2 h-2 mr-2",
                 )}
               />
               <div className="flex flex-row items-center justify-start gap-2">
@@ -74,11 +74,11 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
                   <span
                     className={cn(
                       "text-xs text-muted-foreground overflow-hidden transition-all duration-300 ease-in-out",
-                      isConnected && accountCount > 0 ? "h-4" : "h-0"
+                      isConnected && accountCount > 0 ? "h-4" : "h-0",
                     )}
                   >
-                    {accountCount} account{accountCount !== 1 ? "s" : ""}{" "}
-                    available
+                    {accountCount} account
+                    {accountCount !== 1 ? "s" : ""} available
                   </span>
                 </div>
               </div>

@@ -41,14 +41,14 @@ export function WalletSelect({
       isMobile()
         ? wallet.platforms.includes(SubstrateWalletPlatform.Android) ||
           wallet.platforms.includes(SubstrateWalletPlatform.iOS)
-        : wallet.platforms.includes(SubstrateWalletPlatform.Browser)
+        : wallet.platforms.includes(SubstrateWalletPlatform.Browser),
     )
     .sort((a, b) =>
       installedExtensions.includes(a.id)
         ? -1
         : installedExtensions.includes(b.id)
           ? 1
-          : 0
+          : 0,
     );
 
   return (
@@ -89,7 +89,7 @@ export function WalletSelect({
           <DialogTitle
             className={cn(
               "leading-snug !pl-4 text-left",
-              selectedExtensionName !== undefined && "!pl-0"
+              selectedExtensionName !== undefined && "!pl-0",
             )}
           >
             {selectedExtensionName !== undefined
@@ -115,7 +115,7 @@ export function WalletSelect({
               "flex flex-col items-start gap-2 transition-[max-height,opacity]",
               selectedExtensionName === undefined
                 ? "opacity-100 max-h-[9999px] duration-500 delay-200"
-                : "opacity-0 max-h-0 overflow-hidden duration-0"
+                : "opacity-0 max-h-0 overflow-hidden duration-0",
             )}
           >
             {systemWallets.map((wallet, index) => (
@@ -154,7 +154,7 @@ export function WalletSelect({
               "flex flex-col items-start gap-2 transition-[max-height,opacity]",
               selectedExtensionName === undefined
                 ? "opacity-0 max-h-0 overflow-hidden duration-0"
-                : "opacity-100 max-h-[9999px] duration-500 delay-200"
+                : "opacity-100 max-h-[9999px] duration-500 delay-200",
             )}
           >
             {accounts.length > 0 ? (
@@ -166,7 +166,7 @@ export function WalletSelect({
                       "w-full flex flex-row h-auto justify-start items-center gap-0 [&_svg]:size-auto",
                       selectedAccount?.address === account.address
                         ? "bg-accent"
-                        : ""
+                        : "",
                     )}
                     onClick={() => setSelectedAccount(account)}
                   >

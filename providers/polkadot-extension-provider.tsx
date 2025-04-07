@@ -53,7 +53,7 @@ export const PolkadotExtensionProvider = ({
       const storedExtensionName =
         localStorage.getItem("selectedExtensionName") || undefined;
       const storedAccount = JSON.parse(
-        localStorage.getItem("selectedAccount") || "null"
+        localStorage.getItem("selectedAccount") || "null",
       );
       const storedUserWantsToConnect =
         localStorage.getItem("userWantsToConnect") || false;
@@ -100,7 +100,7 @@ export const PolkadotExtensionProvider = ({
   };
 
   const handleSetSelectedAccount = (
-    account: InjectedPolkadotAccount | null
+    account: InjectedPolkadotAccount | null,
   ) => {
     localStorage.setItem("selectedAccount", JSON.stringify(account));
     setSelectedAccount(account);
@@ -122,7 +122,7 @@ export const PolkadotExtensionProvider = ({
     setInstalledExtensions(extensions);
 
     const selectedExtension: InjectedExtension = await connectInjectedExtension(
-      selectedExtensionName
+      selectedExtensionName,
     );
 
     if (!selectedExtension) {
@@ -137,7 +137,7 @@ export const PolkadotExtensionProvider = ({
     //set the signer to the selected account or the first account
     if (selectedAccount?.address) {
       const _selectedAccount = accounts.find(
-        (account) => account.address === selectedAccount.address
+        (account) => account.address === selectedAccount.address,
       );
       if (_selectedAccount) {
         handleSetSelectedAccount(_selectedAccount);
@@ -177,7 +177,7 @@ export const usePolkadotExtension = () => {
   const context = useContext(PolkadotExtensionContext);
   if (!context) {
     throw new Error(
-      "usePolkadotExtension must be used within a PolkadotExtensionProvider"
+      "usePolkadotExtension must be used within a PolkadotExtensionProvider",
     );
   }
   return context;

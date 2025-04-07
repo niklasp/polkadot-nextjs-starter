@@ -58,7 +58,7 @@ export function TestExtensionProvider({
   const selectedExtensions = useSyncExternalStore(
     extensionsStore.subscribe,
     extensionsStore.getSnapshot,
-    extensionsStore.getServerSnapshot
+    extensionsStore.getServerSnapshot,
   );
 
   return (
@@ -72,7 +72,7 @@ export function useTestExtension() {
   const context = useContext(TestExtensionContext);
   if (!context)
     throw new Error(
-      "useTestExtension must be used within TestExtensionProvider"
+      "useTestExtension must be used within TestExtensionProvider",
     );
   return context;
 }

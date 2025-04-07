@@ -29,7 +29,7 @@ interface ExtensionContext {
     | null;
   setSelectedAccount: (
     extension: InjectedExtension,
-    account: InjectedPolkadotAccount
+    account: InjectedPolkadotAccount,
   ) => void;
   onToggleExtension: (name: string) => Promise<void>;
   availableExtensions: string[];
@@ -51,7 +51,7 @@ const getExtensionsStore = () => {
     connectedExtensions = new Map(connectedExtensions);
     localStorage.setItem(
       EXTENSIONS_STORAGE_KEY,
-      JSON.stringify([...connectedExtensions.keys()])
+      JSON.stringify([...connectedExtensions.keys()]),
     );
     listeners.forEach((cb) => cb());
   };
@@ -95,7 +95,7 @@ const getExtensionsStore = () => {
             console.warn(`Failed to reconnect extension ${name}:`, error);
           }
         }
-      })
+      }),
     );
     update();
   };
@@ -134,7 +134,7 @@ export function ExtensionProvider({ children }: { children: React.ReactNode }) {
 
   const setSelectedAccount = (
     extension: InjectedExtension,
-    account: InjectedPolkadotAccount
+    account: InjectedPolkadotAccount,
   ) => {
     _setSelectedAccount({ ...account, extension });
     // Store selected account info
@@ -148,7 +148,7 @@ export function ExtensionProvider({ children }: { children: React.ReactNode }) {
   const selectedExtensions = useSyncExternalStore(
     extensionsStore.subscribe,
     extensionsStore.getSnapshot,
-    extensionsStore.getServerSnapshot
+    extensionsStore.getServerSnapshot,
   );
 
   const restoreSelectedAccount = useCallback(async () => {
@@ -158,13 +158,13 @@ export function ExtensionProvider({ children }: { children: React.ReactNode }) {
     try {
       const storedAccount = JSON.parse(storedAccountJson) as StoredAccount;
       const extensionData = [...selectedExtensions.values()].find(
-        (ext) => ext.extension.name === storedAccount.extensionName
+        (ext) => ext.extension.name === storedAccount.extensionName,
       );
 
       if (!extensionData) return;
 
       const account = extensionData.accounts.find(
-        (acc) => acc.address === storedAccount.address
+        (acc) => acc.address === storedAccount.address,
       );
 
       if (account) {
@@ -202,7 +202,7 @@ export function ExtensionProvider({ children }: { children: React.ReactNode }) {
         onToggleExtension: extensionsStore.onToggleExtension,
         availableExtensions,
         selectedExtensions: [...selectedExtensions.values()].map(
-          (ext) => ext.extension
+          (ext) => ext.extension,
         ),
       }}
     >
@@ -215,7 +215,7 @@ export const usePolkadotExtension = () => {
   const context = useContext(ExtensionContext);
   if (!context)
     throw new Error(
-      "useSelectedExtensions must be used within a ExtensionProvider"
+      "useSelectedExtensions must be used within a ExtensionProvider",
     );
   return context;
 };

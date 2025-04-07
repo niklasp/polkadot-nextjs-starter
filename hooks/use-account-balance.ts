@@ -16,14 +16,14 @@ export function useAccountBalance() {
   const { api } = useChain();
   const { selectedAccount } = usePolkadotExtension();
   const [accountBalance, setAccountBalance] = useState<AccountBalance | null>(
-    null
+    null,
   );
 
   useEffect(() => {
     if (!selectedAccount || !api) return;
     const subscription = api?.query.System.Account.watchValue(
       selectedAccount?.address,
-      "best"
+      "best",
     ).subscribe((value) => {
       console.log("value", value);
       setAccountBalance({
