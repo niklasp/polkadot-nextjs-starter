@@ -122,7 +122,7 @@ export function MultiViewDialog({
           }}
           animate={{ height }}
           transition={{
-            duration: 0.1,
+            duration: 0.15,
           }}
         >
           <AnimatePresence custom={direction} mode="wait" initial={false}>
@@ -135,8 +135,8 @@ export function MultiViewDialog({
               animate="center"
               exit="exit"
               transition={{
-                x: { type: "tween", duration: 0.1 },
-                opacity: { type: "tween", duration: 0.1 },
+                x: { type: "tween", duration: 0.15 },
+                opacity: { type: "tween", duration: 0.15 },
               }}
               style={{ width: "100%" }}
             >

@@ -28,7 +28,7 @@ export default function RootLayout({
       >
         <Providers>
           <NavBar />
-          {children}
+          <main className="min-h-screen">{children}</main>
           <Footer />
           <ChainInfo />
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />

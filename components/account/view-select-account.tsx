@@ -54,7 +54,7 @@ export function ViewSelectAccount({ previous }: ViewNavigationProps) {
                       variant={
                         selectedAccount?.address === account.address &&
                         selectedAccount?.extension.name === extension.name
-                          ? "outline"
+                          ? "secondary"
                           : "ghost"
                       }
                       className="w-full flex flex-row h-auto justify-start items-center gap-2 px-2"
@@ -101,7 +101,7 @@ export function ViewSelectAccount({ previous }: ViewNavigationProps) {
           onClick={previous}
           className="flex items-center gap-2"
         >
-          ← Back to Wallet Selection
+          ← Back to wallet selection
         </Button>
       </DialogFooter>
     </>

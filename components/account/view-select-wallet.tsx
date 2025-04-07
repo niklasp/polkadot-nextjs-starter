@@ -87,11 +87,11 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               {!availableExtensions.includes(wallet.id) ? (
                 "Install"
               ) : isConnected ? (
-                <span className="text-red-500 flex flex-row items-center gap-2">
+                <span className="text-red-600 dark:text-red-400 flex flex-row items-center gap-2">
                   <ZapOff className="w-4 h-4" /> Disconnect
                 </span>
               ) : (
-                <span className="text-green-500 flex flex-row items-center gap-2">
+                <span className="text-green-600 dark:text-green-400 flex flex-row items-center gap-2">
                   <Zap className="w-4 h-4" /> Connect
                 </span>
               )}

@@ -14,38 +14,5 @@ export default function Test() {
     setSelectedAccount,
   } = usePolkadotExtension();
 
-  return (
-    <div>
-      available extensions:
-      {availableExtensions.map((extension) => (
-        <Button
-          key={extension}
-          onClick={() => {
-            onToggleExtension(extension);
-          }}
-        >
-          {extension}
-        </Button>
-      ))}
-      connected extensions:
-      {selectedExtensions.map((extension) => (
-        <div key={extension.name}>
-          {extension.name}
-          {extension.getAccounts().map((account) => (
-            <Button
-              key={account.address}
-              onClick={() => {
-                setSelectedAccount(extension, account);
-              }}
-            >
-              {trimAddress(account.address)}
-            </Button>
-          ))}
-        </div>
-      ))}
-      selected account:
-      {selectedAccount?.extension?.name} -{selectedAccount?.address} -{" "}
-      {selectedAccount?.name}
-    </div>
-  );
+  return <div>test</div>;
 }
