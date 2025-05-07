@@ -12,6 +12,8 @@ import { chainSpec as polkadotChainSpec } from "polkadot-api/chains/polkadot";
 import { chainSpec as polkadotAssetHubChainSpec } from "polkadot-api/chains/polkadot_asset_hub";
 import { chainSpec as paseoChainSpec } from "polkadot-api/chains/paseo";
 import { chainSpec as paseoAssetHubChainSpec } from "polkadot-api/chains/paseo_asset_hub";
+import { DedotClient } from "dedot";
+import { PolkadotApi, PaseoApi, PolkadotAssetHubApi } from "@dedot/chaintypes";
 
 export interface ChainSpec {
   name: string;
@@ -34,11 +36,6 @@ export interface ChainSpec {
 export interface ChainConfig {
   key: string;
   name: string;
-  descriptors:
-    | typeof polkadot
-    | typeof polkadot_asset_hub
-    | typeof paseo
-    | typeof paseo_asset_hub;
   endpoints: string[];
   explorerUrl?: string;
   icon?: React.ReactNode;
@@ -52,12 +49,16 @@ export type AvailableApis =
   | TypedApi<typeof paseo>
   | TypedApi<typeof paseo_asset_hub>;
 
+export type AvailableDedotApis =
+  | DedotClient<PolkadotApi>
+  | DedotClient<PolkadotAssetHubApi>
+  | DedotClient<PaseoApi>;
+
 // TODO: add all chains your dapp supports here
 export const chainConfig: ChainConfig[] = [
   {
     key: "polkadot",
     name: "Polkadot",
-    descriptors: polkadot,
     endpoints: ["wss://rpc.polkadot.io"],
     icon: logos.polkadot,
     chainSpec: JSON.parse(polkadotChainSpec),
@@ -65,7 +66,6 @@ export const chainConfig: ChainConfig[] = [
   {
     key: "polkadot_asset_hub",
     name: "Polkadot Asset Hub",
-    descriptors: polkadot_asset_hub,
     endpoints: [
       "wss://polkadot-asset-hub-rpc.polkadot.io",
       "wss://statemint.api.onfinality.io/public-ws",
@@ -77,18 +77,8 @@ export const chainConfig: ChainConfig[] = [
   {
     key: "paseo",
     name: "Paseo",
-    descriptors: paseo,
     endpoints: ["wss://rpc.ibp.network/paseo"],
     icon: logos.paseo,
     chainSpec: JSON.parse(paseoChainSpec),
-  },
-  {
-    key: "paseo_asset_hub",
-    name: "Paseo Asset Hub",
-    descriptors: paseo_asset_hub,
-    endpoints: ["wss://asset-hub-paseo-rpc.dwellir.com"],
-    icon: logos.paseoAssethub,
-    chainSpec: JSON.parse(paseoAssetHubChainSpec),
-    relayChainSpec: JSON.parse(paseoChainSpec),
   },
 ];

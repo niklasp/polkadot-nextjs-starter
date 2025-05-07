@@ -8,21 +8,21 @@ import {
   useState,
   useCallback,
 } from "react";
+import { createClient, PolkadotClient } from "polkadot-api";
+import { getSmProvider } from "polkadot-api/sm-provider";
+import * as smoldot from "smoldot/no-auto-bytecode";
 
-import { type ChainConfig, type AvailableDedotApis } from "@/papi-config";
+import { start, type Client, type SmoldotBytecode } from "polkadot-api/smoldot";
+import { type ChainConfig, type AvailableApis } from "@/papi-config";
 import { StatusChange, WsEvent } from "polkadot-api/ws-provider/web";
 import { chainConfig } from "../papi-config";
-
-import type { PolkadotApi } from "@dedot/chaintypes";
-import { DedotClient, SmoldotProvider } from "dedot";
-import { Client } from "smoldot";
 
 interface LightClientApiProviderType {
   connectionStatus: StatusChange | undefined;
   activeChain: ChainConfig;
   setActiveChain: (chain: ChainConfig) => void;
-  provider: SmoldotProvider | null;
-  api: AvailableDedotApis | null;
+  client: PolkadotClient | null;
+  api: AvailableApis | null;
 }
 
 const LightClientApiContext = createContext<
@@ -38,8 +38,8 @@ export function LightClientApiProvider({
 }) {
   const smoldotRef = useRef<Client | null>(null);
   const [activeChain, setActiveChain] = useState<ChainConfig>(defaultChain);
-  const [activeApi, setActiveApi] = useState<AvailableDedotApis | null>(null);
-  const [provider, setProvider] = useState<SmoldotProvider | null>(null);
+  const [activeApi, setActiveApi] = useState<AvailableApis | null>(null);
+  const [client, setClient] = useState<PolkadotClient | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<
     StatusChange | undefined
   >(undefined);
@@ -94,18 +94,10 @@ export function LightClientApiProvider({
           throw new Error("Failed to add chain to light client");
         }
 
-        const provider = new SmoldotProvider(chain);
-        setProvider(provider);
-
-        console.log("provider", provider);
-        const api = await DedotClient.new<PolkadotApi>({
-          provider,
-          cacheMetadata: true,
-        });
-
-        console.log("api", api);
-
-        setActiveApi(api);
+        const lightClient = createClient(getSmProvider(chain));
+        setClient(lightClient);
+        const typedApi = lightClient.getTypedApi(chainConfig.descriptors);
+        setActiveApi(typedApi);
         setActiveChain(chainConfig);
 
         setConnectionStatus({
@@ -119,7 +111,7 @@ export function LightClientApiProvider({
         });
       }
     },
-    [setActiveApi, setActiveChain, setConnectionStatus],
+    [setClient, setActiveApi, setActiveChain, setConnectionStatus],
   );
 
   useEffect(() => {
@@ -128,7 +120,7 @@ export function LightClientApiProvider({
     return () => {
       smoldotRef.current?.terminate();
       smoldotRef.current = null;
-      setProvider(null);
+      setClient(null);
     };
   }, [defaultChain, initializeClient]);
 
@@ -137,7 +129,7 @@ export function LightClientApiProvider({
       value={{
         connectionStatus,
         api: activeApi,
-        provider,
+        client,
         activeChain,
         setActiveChain: initializeClient,
       }}

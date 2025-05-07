@@ -1,28 +1,32 @@
 "use client";
 
 import { useLightClientApi } from "@/providers/lightclient-api-provider";
-import { WsEvent } from "polkadot-api/ws-provider/web";
-import type { Subscription } from "rxjs";
+import { Unsub } from "dedot/types";
 import { useEffect, useRef, useState } from "react";
 
 export function useBlockNumber() {
-  const { client, connectionStatus } = useLightClientApi();
+  const { provider, connectionStatus, api } = useLightClientApi();
   const [blockNumber, setBlockNumber] = useState<number | null>(null);
-  const subscription = useRef<Subscription | null>(null);
+  const unsubRef = useRef<Unsub | null>(null);
 
   useEffect(() => {
-    if (client && connectionStatus?.type === WsEvent.CONNECTED) {
-      subscription.current = client.finalizedBlock$.subscribe((value) => {
-        setBlockNumber(value.number);
-      });
-    }
+    (async () => {
+      if (!api) return;
+      try {
+        const unsub = await api.query.system.number((blockNumber) => {
+          setBlockNumber(Number(blockNumber));
+        });
+        unsubRef.current = unsub;
+      } catch (error) {
+        setBlockNumber(null);
+      }
+    })();
 
     return () => {
-      subscription.current?.unsubscribe();
-      subscription.current = null;
+      if (typeof unsubRef.current === "function") unsubRef.current();
       setBlockNumber(null);
     };
-  }, [client, connectionStatus?.type]);
+  }, [provider, connectionStatus?.type, api]);
 
   return blockNumber;
 }

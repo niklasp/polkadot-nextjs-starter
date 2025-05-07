@@ -2,7 +2,8 @@
 
 import { useLightClientApi } from "@/providers/lightclient-api-provider";
 import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
-import { useEffect, useState } from "react";
+import { Unsub } from "dedot/types";
+import { useEffect, useRef, useState } from "react";
 
 export type AccountBalance = {
   free: bigint;
@@ -18,25 +19,46 @@ export function useAccountBalance() {
   const [accountBalance, setAccountBalance] = useState<AccountBalance | null>(
     null,
   );
+  const unsubRef = useRef<Unsub | null>(null);
 
   useEffect(() => {
-    if (!selectedAccount || !api) return;
-    const subscription = api?.query.System.Account.watchValue(
-      selectedAccount?.address,
-      "best",
-    ).subscribe((value) => {
-      console.log("value", value);
-      setAccountBalance({
-        ...value.data,
-        lastUpdated: new Date(),
-      });
-    });
-
+    (async () => {
+      if (!selectedAccount?.address || !api) return;
+      try {
+        const unsub = await api.query.system.account(
+          selectedAccount.address,
+          (value: any) => {
+            if (
+              !value?.data ||
+              value.data.free == null ||
+              value.data.reserved == null ||
+              value.data.frozen == null ||
+              value.data.flags == null
+            ) {
+              console.error("Invalid account data", value);
+              setAccountBalance(null);
+              return;
+            }
+            setAccountBalance({
+              free: BigInt(value.data.free),
+              reserved: BigInt(value.data.reserved),
+              frozen: BigInt(value.data.frozen),
+              flags: BigInt(value.data.flags),
+              lastUpdated: new Date(),
+            });
+          },
+        );
+        unsubRef.current = unsub;
+      } catch (error) {
+        console.error("Failed to subscribe to account balance", error);
+        setAccountBalance(null);
+      }
+    })();
     return () => {
+      if (typeof unsubRef.current === "function") unsubRef.current();
       setAccountBalance(null);
-      subscription?.unsubscribe();
     };
-  }, [selectedAccount, api]);
+  }, [selectedAccount?.address, api]);
 
   return accountBalance;
 }

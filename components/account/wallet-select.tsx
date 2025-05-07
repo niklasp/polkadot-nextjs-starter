@@ -55,7 +55,7 @@ export function WalletSelect({
           )}
           {selectedAccount?.address && (
             <Identicon
-              value={selectedAccount?.address}
+              value={selectedAccount.address}
               size={30}
               theme="polkadot"
               className="[&>svg>circle:first-child]:fill-none"
