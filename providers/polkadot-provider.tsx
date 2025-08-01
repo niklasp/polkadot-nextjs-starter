@@ -43,6 +43,9 @@ export function PolkadotProvider({
   const [selectedAccount, setSelectedAccount] = useState<WalletAccount | null>(
     null,
   );
+  const [connectionStatus, setConnectionStatus] = useState<
+    StatusChange | undefined
+  >(undefined);
 
   return (
     <ThemeProvider defaultTheme="dark">

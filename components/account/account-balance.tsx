@@ -1,7 +1,6 @@
 "use client";
 
 import { useAccountBalance } from "@/hooks/use-account-balance";
-import { useLightClientApi } from "@/providers/lightclient-api-provider";
 import { useMemo } from "react";
 import { Identicon } from "@polkadot/react-identicon";
 import {
@@ -15,12 +14,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatLastUpdated } from "../../lib/utils";
 import { useAccounts } from "@reactive-dot/react";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { WalletSelect } from "./wallet-select";
+import { WalletSelect } from "@/components/account/wallet-select";
 import { formatBalance } from "@/lib/format-balance";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 
 export function AccountBalance() {
+  const { activeChain } = usePolkadotContext();
   const accountBalance = useAccountBalance();
   const { selectedAccount } = useSelectedAccount();
+
   const isInitializing = false; // reactive-dot handles initialization differently
 
   const { tokenDecimals, tokenSymbol } = activeChain.chainSpec.properties;
