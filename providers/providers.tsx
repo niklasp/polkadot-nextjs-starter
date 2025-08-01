@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import { ThemeProvider } from "./theme-provider";
-import { ExtensionProvider } from "./polkadot-extension-provider";
-import { LightClientApiProvider } from "./lightclient-api-provider";
+import { ReactiveDotProvider } from "@reactive-dot/react"
+import { ThemeProvider } from "./theme-provider"
+import { SelectedAccountProvider } from "./selected-account-provider"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider defaultTheme="dark">
-      <ExtensionProvider>
-        <LightClientApiProvider>{children}</LightClientApiProvider>
-      </ExtensionProvider>
+      <ReactiveDotProvider>
+        <SelectedAccountProvider>{children}</SelectedAccountProvider>
+      </ReactiveDotProvider>
     </ThemeProvider>
-  );
+  )
 }
