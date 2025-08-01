@@ -104,7 +104,7 @@ export function NavBar() {
           {/* Right Side */}
           <div className="hidden md:flex gap-1 items-center">
             <ThemeToggle />
-            {/* <ChainSelect /> */}
+            <ChainSelect />
             <WalletSelect />
           </div>
         </div>

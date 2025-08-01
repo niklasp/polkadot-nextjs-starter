@@ -18,45 +18,46 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { chainConfig } from "@/papi-config";
-import { useLightClientApi } from "@/providers/lightclient-api-provider";
 import { StatusChange, WsEvent } from "polkadot-api/ws-provider/web";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo } from "react";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
+import { config } from "@/config";
+import { ChainId } from "@reactive-dot/core";
 
 export function ChainSelect() {
-  const { setActiveChain, activeChain, connectionStatus } = useLightClientApi();
+  const { chainId, setChainId, activeChain } = usePolkadotContext();
 
   const Trigger = useMemo(() => {
-    if (connectionStatus?.type === WsEvent.ERROR) {
-      return (
-        <Button variant="ghost" size="icon">
-          <AlertCircle className="w-4 h-4 text-red-500" />
-        </Button>
-      );
-    }
+    // if (connectionStatus?.type === WsEvent.ERROR) {
+    //   return (
+    //     <Button variant="ghost" size="icon">
+    //       <AlertCircle className="w-4 h-4 text-red-500" />
+    //     </Button>
+    //   );
+    // }
 
-    if (connectionStatus?.type === WsEvent.CONNECTING) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Loader2 className="w-4 h-4 animate-spin" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Connecting to the network...</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
+    // if (connectionStatus?.type === WsEvent.CONNECTING) {
+    //   return (
+    //     <TooltipProvider>
+    //       <Tooltip>
+    //         <TooltipTrigger asChild>
+    //           <Button variant="ghost" size="icon">
+    //             <Loader2 className="w-4 h-4 animate-spin" />
+    //           </Button>
+    //         </TooltipTrigger>
+    //         <TooltipContent>Connecting to the network...</TooltipContent>
+    //       </Tooltip>
+    //     </TooltipProvider>
+    //   );
+    // }
 
     return (
       <Button variant="ghost" size="icon">
         {activeChain?.icon}
       </Button>
     );
-  }, [activeChain, connectionStatus]);
+  }, [activeChain]);
 
   return (
     <DropdownMenu>
@@ -65,20 +66,22 @@ export function ChainSelect() {
         <DropdownMenuLabel>Select Chain</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
-          value={activeChain?.key}
+          value={chainId}
           onValueChange={(value) => {
-            const newChain = chainConfig.find((chain) => chain.key === value);
-            if (newChain) {
-              setActiveChain(newChain);
+            if (value) {
+              setChainId(value as ChainId);
             }
           }}
         >
-          {chainConfig.map((chain) => (
-            <DropdownMenuRadioItem key={chain.key} value={chain.key}>
-              {chain.icon}
-              {chain.name}
-            </DropdownMenuRadioItem>
-          ))}
+          {Object.keys(config.chains).map((chainId) => {
+            const chain = config.chains[chainId as keyof typeof config.chains];
+            return (
+              <DropdownMenuRadioItem key={chainId} value={chainId}>
+                {chain.icon}
+                {chain.name}
+              </DropdownMenuRadioItem>
+            );
+          })}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

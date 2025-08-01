@@ -7,10 +7,12 @@ import { Providers } from "@/providers/providers";
 
 import { fontSans, fontMono } from "@/fonts";
 import Footer from "@/components/layout/footer";
-import { ChainInfo } from "@/components/chain/chain-info";
 
 import "./globals.css";
 import { NavBar } from "@/components/layout/nav-bar";
+import { PolkadotProvider } from "@/providers/polkadot-provider";
+import { ChainInfo } from "@/components/chain/chain-info";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Polkadot Next.js Starter",
@@ -27,13 +29,15 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
-        <Providers>
+        <PolkadotProvider>
           <NavBar />
           <main className="min-h-screen">{children}</main>
           <Footer />
-          {/* <ChainInfo /> */}
+          <Suspense fallback={<div>Loading...</div>}>
+            <ChainInfo />
+          </Suspense>
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
-        </Providers>
+        </PolkadotProvider>
         <Analytics />
       </body>
     </html>
