@@ -13,14 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatLastUpdated } from "../../lib/utils";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
+import { useAccounts } from "@reactive-dot/react";
+import { useSelectedAccount } from "@/providers/selected-account-provider";
 import { WalletSelect } from "./wallet-select";
 import { formatBalance } from "@/lib/format-balance";
 
 export function AccountBalance() {
   const accountBalance = useAccountBalance();
-  const { activeChain } = useLightClientApi();
-  const { selectedAccount, isInitializing } = usePolkadotExtension();
+  const { selectedAccount } = useSelectedAccount();
+  const isInitializing = false; // reactive-dot handles initialization differently
 
   const { tokenDecimals, tokenSymbol } = activeChain.chainSpec.properties;
 

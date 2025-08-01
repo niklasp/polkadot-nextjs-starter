@@ -56,7 +56,7 @@ export function NavBar() {
           {/* Mobile menu control - includes both toggle button and menu */}
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
-            <ChainSelect />
+            {/* <ChainSelect /> */}
             <WalletSelect />
             <NavMobileControl items={navItems} />
           </div>
@@ -104,7 +104,7 @@ export function NavBar() {
           {/* Right Side */}
           <div className="hidden md:flex gap-1 items-center">
             <ThemeToggle />
-            <ChainSelect />
+            {/* <ChainSelect /> */}
             <WalletSelect />
           </div>
         </div>

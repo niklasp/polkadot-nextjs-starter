@@ -31,7 +31,7 @@ export default function RootLayout({
           <NavBar />
           <main className="min-h-screen">{children}</main>
           <Footer />
-          <ChainInfo />
+          {/* <ChainInfo /> */}
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
         </Providers>
         <Analytics />

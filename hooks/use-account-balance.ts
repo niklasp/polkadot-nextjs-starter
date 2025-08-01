@@ -1,8 +1,7 @@
 "use client";
 
-import { useLightClientApi } from "@/providers/lightclient-api-provider";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
-import { useEffect, useState } from "react";
+import { useLazyLoadQuery } from "@reactive-dot/react";
+import { useSelectedAccount } from "@/providers/selected-account-provider";
 
 export type AccountBalance = {
   free: bigint;
@@ -13,30 +12,26 @@ export type AccountBalance = {
 };
 
 export function useAccountBalance() {
-  const { api } = useLightClientApi();
-  const { selectedAccount } = usePolkadotExtension();
-  const [accountBalance, setAccountBalance] = useState<AccountBalance | null>(
-    null,
+  const { selectedAccount } = useSelectedAccount();
+
+  const accountInfo = useLazyLoadQuery((builder) =>
+    selectedAccount?.address
+      ? builder.storage("System", "Account", [selectedAccount.address], {
+          at: "best",
+        })
+      : null,
   );
 
-  useEffect(() => {
-    if (!selectedAccount || !api) return;
-    const subscription = api?.query.System.Account.watchValue(
-      selectedAccount?.address,
-      "best",
-    ).subscribe((value) => {
-      console.log("value", value);
-      setAccountBalance({
-        ...value.data,
-        lastUpdated: new Date(),
-      });
-    });
+  // Transform the account info to match our expected format
+  if (!accountInfo || !selectedAccount) {
+    return null;
+  }
 
-    return () => {
-      setAccountBalance(null);
-      subscription?.unsubscribe();
-    };
-  }, [selectedAccount, api]);
-
-  return accountBalance;
+  return {
+    free: accountInfo.data.free,
+    reserved: accountInfo.data.reserved,
+    frozen: accountInfo.data.frozen,
+    flags: accountInfo.data.flags,
+    lastUpdated: new Date(),
+  };
 }
