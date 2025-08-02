@@ -50,20 +50,18 @@ export function ConnectionProvider({
   const currentChainRef = useRef<string>(chainId);
   const subscriptionCountRef = useRef(0);
 
-  // Determine client type based on chain configuration
   useEffect(() => {
     const provider = config.chains[chainId].provider;
-    if (provider instanceof createLightClientProvider) {
-      setClientType("lightclient");
-    } else {
+    if ("result" in provider) {
       setClientType("websocket");
+    } else {
+      setClientType("lightclient");
     }
   }, [chainId]);
 
   // IMMEDIATE cleanup and UI updates on chain change - NO WAITING
   useEffect(() => {
     if (!isClient) return;
-
     // IMMEDIATE subscription cleanup - don't wait for anything
     if (subscriptionRef.current) {
       console.log(

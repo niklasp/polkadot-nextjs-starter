@@ -15,24 +15,24 @@ export const config = defineConfig({
   chains: {
     polkadot: {
       descriptor: polkadot,
-      // provider: getWsProvider("wss://polkadot-rpc.publicnode.com"),
-      provider: lightClientProvider.addRelayChain({ id: "polkadot" }),
+      provider: getWsProvider("wss://polkadot-rpc.publicnode.com"),
+      // provider: lightClientProvider.addRelayChain({ id: "polkadot" }),
       name: "Polkadot",
       icon: logos.polkadot,
     },
     polkadot_asset_hub: {
       descriptor: polkadot_asset_hub,
-      // provider: getWsProvider("wss://polkadot-asset-hub-rpc.polkadot.io"),
-      provider: lightClientProvider
-        .addRelayChain({ id: "polkadot" })
-        .addParachain({ id: "polkadot_asset_hub" }),
+      provider: getWsProvider("wss://polkadot-asset-hub-rpc.polkadot.io"),
+      // provider: lightClientProvider
+      //   .addRelayChain({ id: "polkadot" })
+      //   .addParachain({ id: "polkadot_asset_hub" }),
       name: "Polkadot Asset Hub",
       icon: logos.assetHub,
     },
     paseo: {
       descriptor: paseo,
-      // provider: getWsProvider("wss://rpc.ibp.network/paseo"),
-      provider: lightClientProvider.addRelayChain({ id: "paseo" }),
+      provider: getWsProvider("wss://rpc.ibp.network/paseo"),
+      // provider: lightClientProvider.addRelayChain({ id: "paseo" }),
       name: "Paseo",
       icon: logos.paseo,
     },
