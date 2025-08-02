@@ -1,14 +1,17 @@
 import { fontUnbounded } from "@/fonts";
 import { cn } from "@/lib/utils";
-import { AccountBalance } from "@/components/account/account-balance";
 import { Link } from "@/components/ui/link";
+import { ChainInfoCards } from "@/components/info-cards/chain-info-cards";
+import { AccountInfoCards } from "@/components/info-cards/account-info-cards";
+import { Suspense } from "react";
+import { ExtrinsicInfoCards } from "@/components/info-cards/extrinsic-info-cards";
 
 export default async function Home() {
   return (
-    <main className="flex min-h-screen p-6 sm:p-8 pb-20 flex-col gap-[32px] row-start-2 items-center justify-center relative">
+    <main className="flex min-h-screen p-6 sm:p-8 pb-20 flex-col gap-[32px] row-start-2 items-center relative">
       <h1
         className={cn(
-          "text-5xl lg:text-6xl font-light",
+          "text-5xl lg:text-6xl font-light pt-10",
           fontUnbounded.className,
         )}
       >
@@ -18,19 +21,27 @@ export default async function Home() {
         A starter project for your next Polkadot dApp.
       </p>
 
+      <Suspense fallback={<div>Loading...</div>}>
+        <ChainInfoCards />
+      </Suspense>
+      <AccountInfoCards />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ExtrinsicInfoCards />
+      </Suspense>
+
       <div className="flex flex-col gap-4 text-sm">
         <p className="text-center mb-0 pb-0">Built with</p>
         <div className="flex gap-4 text-sm">
           <Link href="https://nextjs.org" className="font-mono">
-            Next.js
+            next.js
           </Link>
 
           <Link href="https://polkadot.js.org" className="font-mono">
-            Polkadot API
+            polkadot-api (papi)
           </Link>
 
           <Link href="https://reactive-dot.com" className="font-mono">
-            Reactive Dot
+            reactive-dot
           </Link>
         </div>
       </div>
@@ -46,7 +57,6 @@ export default async function Home() {
           height={32}
         />
       </a>
-      {/* <AccountBalance /> */}
     </main>
   );
 }

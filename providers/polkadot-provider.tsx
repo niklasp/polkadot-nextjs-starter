@@ -5,30 +5,26 @@ import { SelectedAccountProvider } from "./selected-account-provider";
 import { useState } from "react";
 import { ChainId } from "@reactive-dot/core";
 import { config } from "@/config";
-import { WalletAccount } from "@reactive-dot/core/wallets.js";
 import { createContext } from "react";
 import { ThemeProvider } from "./theme-provider";
 import { useContext } from "react";
+import { ConnectionProvider } from "./connection-provider";
 
 interface PolkadotContextType {
   chainId: ChainId;
   activeChain: (typeof config.chains)[ChainId];
   setChainId: (chainId: ChainId) => void;
-  selectedAccount: WalletAccount | null;
-  setSelectedAccount: (account: WalletAccount | null) => void;
 }
 
 const PolkadotContext = createContext<PolkadotContextType>({
   chainId: "polkadot",
   activeChain: config.chains["polkadot"],
   setChainId: () => {},
-  selectedAccount: null,
-  setSelectedAccount: () => {},
 });
 
 /**
  * Polkadot Provider is a wrapper around the needed reactive-dot providers <ReactiveDotProvider> and <ChainProvider>
- * That also stores the selected account and chain in the local storage
+ * That also stores the selected account in the local storage and allows to switch between chains
  * @param param0
  * @returns
  */
@@ -40,12 +36,6 @@ export function PolkadotProvider({
   defaultChainId?: ChainId;
 }) {
   const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
-  const [selectedAccount, setSelectedAccount] = useState<WalletAccount | null>(
-    null,
-  );
-  const [connectionStatus, setConnectionStatus] = useState<
-    StatusChange | undefined
-  >(undefined);
 
   return (
     <ThemeProvider defaultTheme="dark">
@@ -54,13 +44,13 @@ export function PolkadotProvider({
           chainId: currentChainId,
           activeChain: config.chains[currentChainId],
           setChainId: setCurrentChainId,
-          selectedAccount,
-          setSelectedAccount,
         }}
       >
         <ReactiveDotProvider config={config}>
           <ChainProvider chainId={currentChainId}>
-            <SelectedAccountProvider>{children}</SelectedAccountProvider>
+            <ConnectionProvider>
+              <SelectedAccountProvider>{children}</SelectedAccountProvider>
+            </ConnectionProvider>
           </ChainProvider>
         </ReactiveDotProvider>
       </PolkadotContext.Provider>

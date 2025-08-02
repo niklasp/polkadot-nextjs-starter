@@ -1,15 +1,8 @@
 "use client";
 
+import { idle } from "@reactive-dot/core";
 import { useLazyLoadQuery } from "@reactive-dot/react";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
-
-export type AccountBalance = {
-  free: bigint;
-  reserved: bigint;
-  frozen: bigint;
-  flags: bigint;
-  lastUpdated?: Date;
-};
 
 export function useAccountBalance() {
   const { selectedAccount } = useSelectedAccount();
@@ -19,19 +12,12 @@ export function useAccountBalance() {
       ? builder.storage("System", "Account", [selectedAccount.address], {
           at: "best",
         })
-      : null,
+      : undefined,
   );
 
-  // Transform the account info to match our expected format
-  if (!accountInfo || !selectedAccount) {
-    return null;
+  if (accountInfo === idle) {
+    return;
   }
 
-  return {
-    free: accountInfo.data.free,
-    reserved: accountInfo.data.reserved,
-    frozen: accountInfo.data.frozen,
-    flags: accountInfo.data.flags,
-    lastUpdated: new Date(),
-  };
+  return accountInfo?.data;
 }

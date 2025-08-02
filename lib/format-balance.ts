@@ -4,33 +4,19 @@ export const decimalSeparatorDisplay = ".";
 export const decimalSeparatorsInput = [".", ","];
 export const decimalSeparatorRegex = ",|.";
 
-export type FormatCurrencyOptions = {
-  nDecimals: number;
-  padToDecimals: boolean;
-  decimalSeparator: string;
-};
-
-const defaultOptions: FormatCurrencyOptions = {
-  nDecimals: Infinity,
-  padToDecimals: true,
-  decimalSeparator: decimalSeparatorDisplay,
-};
-
 export const formatBalance = ({
   value,
   decimals,
   unit,
-  options,
+  nDecimals,
 }: {
   value: bigint | null | undefined;
   decimals: number;
   unit?: string;
-  options?: Partial<FormatCurrencyOptions>;
+  nDecimals?: number;
+  padToDecimals?: boolean;
+  decimalSeparator?: string;
 }): string => {
-  const { nDecimals } = {
-    ...defaultOptions,
-    ...options,
-  };
   if (value === null || value === undefined) return "";
 
   const precisionMultiplier = 10n ** BigInt(decimals);
@@ -39,9 +25,7 @@ export const formatBalance = ({
 
   const fullNumber = Number(absValue) / Number(precisionMultiplier);
 
-  const formattedNumber = fullNumber.toFixed(
-    nDecimals === Infinity ? decimals : nDecimals,
-  );
+  const formattedNumber = fullNumber.toFixed(nDecimals);
 
   const finalNumber = isNegative ? `-${formattedNumber}` : formattedNumber;
 

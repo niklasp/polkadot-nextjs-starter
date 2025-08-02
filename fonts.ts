@@ -1,10 +1,10 @@
-import { Geist_Mono, Unbounded, Manrope } from "next/font/google";
+import { Geist_Mono, Unbounded, Inter } from "next/font/google";
 
-export const fontSans = Manrope({
+export const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const fontUnbounded = Unbounded({
