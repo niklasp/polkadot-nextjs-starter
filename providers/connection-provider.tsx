@@ -60,56 +60,66 @@ export function ConnectionProvider({
     }
   }, [chainId]);
 
-  // Handle subscription with proper cleanup and debugging
+  // IMMEDIATE cleanup and UI updates on chain change - NO WAITING
   useEffect(() => {
-    // CRITICAL: Only run on client side with valid client
-    if (!isClient || !chainClient) {
-      console.log("🚫 Preventing subscription - SSR or no client");
+    if (!isClient) return;
+
+    // IMMEDIATE subscription cleanup - don't wait for anything
+    if (subscriptionRef.current) {
+      console.log(
+        `🚫 IMMEDIATE cleanup of subscription for chain switch to: ${chainId}`,
+      );
+      subscriptionRef.current.unsubscribe();
+      subscriptionRef.current = null;
+    }
+
+    // IMMEDIATE UI updates
+    setConnectionStatus("connecting");
+    setBlockNumber(null);
+    setChainSpec(null);
+
+    // Update chain reference immediately
+    currentChainRef.current = chainId;
+  }, [chainId, isClient]);
+
+  // Handle subscription creation when client is ready (separate from cleanup)
+  useEffect(() => {
+    // CRITICAL: Only run on client side
+    if (!isClient) {
+      console.log("🚫 Preventing subscription - SSR");
       setConnectionStatus("close");
+      return;
+    }
+
+    // Wait for client, but cleanup already happened immediately above
+    if (!chainClient) {
+      console.log("⏳ Waiting for chainClient to initialize...");
+      return;
+    }
+
+    // Prevent duplicate subscriptions if already subscribed to same chain
+    if (subscriptionRef.current && currentChainRef.current === chainId) {
+      console.log(`⏭️ Already subscribed to ${chainId}, skipping duplicate`);
       return;
     }
 
     subscriptionCountRef.current += 1;
     console.log(
-      `🔌 ConnectionProvider effect #${subscriptionCountRef.current} triggered. Chain: ${chainId}, Client changed: ${currentChainRef.current !== chainId ? "YES" : "NO"}`,
+      `🔌 Creating new subscription for ${chainId} (attempt #${subscriptionCountRef.current})`,
     );
-
-    // Clean up existing subscription if chain changed
-    if (currentChainRef.current !== chainId && subscriptionRef.current) {
-      console.log(
-        `🧹 Cleaning up subscription for old chain: ${currentChainRef.current}`,
-      );
-      setConnectionStatus("connecting");
-      subscriptionRef.current.unsubscribe();
-      subscriptionRef.current = null;
-    }
-
-    // Update chain reference
-    currentChainRef.current = chainId;
-
-    // Reset state for new chain
-    console.log(`🔄 Setting connection status to connecting for ${chainId}`);
-    setConnectionStatus("connecting");
-    setBlockNumber(null);
-    setChainSpec(null);
-
-    let isActive = true;
 
     if (!chainClient?.finalizedBlock$) {
       console.log("⚠️ Client not ready, skipping subscription");
-      setConnectionStatus("error");
       return;
     }
 
     console.log(`🔄 Creating subscription for ${chainId}`);
-    setConnectionStatus("connecting");
 
     const blockNumberSubscription = chainClient.finalizedBlock$.subscribe({
       next: (block) => {
-        if (!isActive) {
-          console.log(
-            `⚠️ Received block for inactive subscription: ${chainId}`,
-          );
+        // Check if this is still the current chain
+        if (currentChainRef.current !== chainId) {
+          console.log(`⚠️ Received block for old chain ${chainId}, ignoring`);
           return;
         }
         console.log(`📦 Block #${block.number} received for ${chainId}`);
@@ -117,7 +127,8 @@ export function ConnectionProvider({
         setConnectionStatus("connected");
       },
       error: (error) => {
-        if (!isActive) return;
+        // Check if this is still the current chain
+        if (currentChainRef.current !== chainId) return;
         console.log(`❌ Subscription error for ${chainId}:`, error);
         setConnectionStatus("error");
         setBlockNumber(null);
@@ -126,11 +137,12 @@ export function ConnectionProvider({
 
     subscriptionRef.current = blockNumberSubscription;
 
-    // Get chain spec data
+    // Get chain spec data in parallel (non-blocking)
     chainClient
       .getChainSpecData()
       .then((chainSpecData) => {
-        if (!isActive) return;
+        // Check if this is still the current chain
+        if (currentChainRef.current !== chainId) return;
         console.log(`⚙️ Chain spec loaded for ${chainId}`);
         setChainSpec({
           tokenDecimals: chainSpecData.properties.tokenDecimals,
@@ -138,23 +150,15 @@ export function ConnectionProvider({
         });
       })
       .catch((error) => {
-        if (!isActive) return;
+        if (currentChainRef.current !== chainId) return;
         console.error(`❌ Failed to get chain spec for ${chainId}:`, error);
-        // Don't change connection status for chain spec errors - blocks are more important
       });
 
     return () => {
-      console.log(`🧽 Cleanup function called for chain: ${chainId}`);
-      isActive = false;
-      setConnectionStatus("close");
-      setBlockNumber(null);
-      if (subscriptionRef.current) {
-        console.log(`🧹 Unsubscribing subscription for: ${chainId}`);
-        subscriptionRef.current.unsubscribe();
-        subscriptionRef.current = null;
-      }
+      console.log(`🧽 Subscription creation cleanup for: ${chainId}`);
+      // Cleanup is handled by the immediate effect above, not here
     };
-  }, [chainId, isClient]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [chainId, isClient, chainClient]); // Include chainClient to re-run when it becomes available
 
   return (
     <ConnectionContext.Provider

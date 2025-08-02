@@ -1,29 +1,19 @@
 "use client";
-import { TxButton } from "@/components/chain-ui/tx-button";
-import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { useMutation, useTypedApi } from "@reactive-dot/react";
+import { SuspendingTxButton } from "@/components/chain-ui/tx-button";
 import { Binary } from "polkadot-api";
 import { useCallback } from "react";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { useFees } from "@/hooks/use-fees";
+import { useTypedApi } from "@reactive-dot/react";
 
 export function ExtrinsicInfoCards() {
-  const typedApi = useTypedApi();
-  const { selectedAccount } = useSelectedAccount();
-
-  // Extract transaction builder to reuse for both mutation and fees
+  // Transaction builder - typed to match SuspendingTxButton's expected type
   const remarkTxBuilder = useCallback(
-    (tx: typeof typedApi.tx) =>
+    (tx: ReturnType<typeof useTypedApi>["tx"]) =>
       tx.System.remark({
         remark: Binary.fromText("Hello from polkadot-next-js-starter!"),
       }),
-    [typedApi], // Include typedApi in dependencies for proper typing
+    [],
   );
-
-  const remarkTx = useMutation(remarkTxBuilder, {
-    signer: selectedAccount?.polkadotSigner,
-  });
-  const remarkTxFees = useFees(remarkTxBuilder);
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl">
@@ -36,9 +26,9 @@ export function ExtrinsicInfoCards() {
             <CardHeader>
               <CardDescription>Remark</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                <TxButton tx={remarkTx} fees={remarkTxFees}>
+                <SuspendingTxButton txBuilder={remarkTxBuilder}>
                   Create On Chain Remark
-                </TxButton>
+                </SuspendingTxButton>
               </CardTitle>
             </CardHeader>
           </Card>

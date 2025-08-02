@@ -9,8 +9,8 @@ import { useMemo, Suspense } from "react";
 import { formatBalance } from "@/lib/format-balance";
 import { useConnectionStatus } from "@/providers/connection-provider";
 
-function AccountBalanceCard() {
-  const accountBalance = useAccountBalance();
+function BalanceValue() {
+  const accountBalance = useAccountBalance(); // ← This uses useLazyLoadQuery which suspends
   const { chainSpec } = useConnectionStatus();
 
   const formattedBalance = useMemo(() => {
@@ -26,25 +26,18 @@ function AccountBalanceCard() {
     });
   }, [accountBalance, chainSpec]);
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardDescription>Account Balance</CardDescription>
-        <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-          {formattedBalance ?? "Loading..."}
-        </CardTitle>
-      </CardHeader>
-    </Card>
-  );
+  return formattedBalance ?? "Loading...";
 }
 
-function BalanceCardSkeleton() {
+function AccountBalanceCard() {
   return (
     <Card>
       <CardHeader>
         <CardDescription>Account Balance</CardDescription>
         <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-          <Skeleton className="h-6 w-32" />
+          <Suspense fallback={<Skeleton className="h-6 w-32" />}>
+            <BalanceValue />
+          </Suspense>
         </CardTitle>
       </CardHeader>
     </Card>
@@ -85,9 +78,7 @@ export function AccountInfoCards() {
               </CardTitle>
             </CardHeader>
           </Card>
-          <Suspense fallback={<BalanceCardSkeleton />}>
-            <AccountBalanceCard />
-          </Suspense>
+          <AccountBalanceCard />
         </div>
       </div>
     </div>

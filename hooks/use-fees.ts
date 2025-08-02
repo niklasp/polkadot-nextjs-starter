@@ -11,8 +11,8 @@ type TransactionBuilder<T = any> = (tx: T) => any;
 export function useFees(txBuilder: TransactionBuilder) {
   const { selectedAccount } = useSelectedAccount();
   const { chainSpec } = useConnectionStatus();
-  const typedApi = useTypedApi();
-  const accountBalance = useAccountBalance();
+  const typedApi = useTypedApi(); // ← This suspends
+  const accountBalance = useAccountBalance(); // ← This uses useLazyLoadQuery which suspends
 
   // Fee estimation state
   const [estimatedFees, setEstimatedFees] = useState<bigint | null>(null);

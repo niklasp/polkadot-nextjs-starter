@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
   },
   {
     title: "Resources",
-    href: "/resources",
+    href: "#",
     items: [],
   },
 ];

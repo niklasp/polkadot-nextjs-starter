@@ -25,7 +25,7 @@ export const PolkadotContext = createContext<PolkadotContextType>({
 
 export function PolkadotProvider({
   children,
-  defaultChainId = "paseo",
+  defaultChainId = "polkadot",
 }: PolkadotProviderProps) {
   const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
 

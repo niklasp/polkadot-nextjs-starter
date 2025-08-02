@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { Link } from "@/components/ui/link";
 import { ChainInfoCards } from "@/components/info-cards/chain-info-cards";
 import { AccountInfoCards } from "@/components/info-cards/account-info-cards";
-import { Suspense } from "react";
 import { ExtrinsicInfoCards } from "@/components/info-cards/extrinsic-info-cards";
 
 export default async function Home() {

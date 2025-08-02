@@ -6,7 +6,6 @@ import { fontMono, fontSans } from "@/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { Loader } from "lucide-react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import "./globals.css";
 import { PolkadotProvider } from "@/providers/polkadot-provider";
 
@@ -25,13 +24,11 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
-        <PolkadotProvider>
+        <PolkadotProvider defaultChainId="polkadot">
           <NavBar />
           <main className="min-h-screen">{children}</main>
           <Footer />
-          <Suspense fallback={<div>Loading...</div>}>
-            <ChainInfo />
-          </Suspense>
+          <ChainInfo />
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
         </PolkadotProvider>
         <Analytics />
