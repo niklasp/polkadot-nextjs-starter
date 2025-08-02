@@ -1,77 +1,56 @@
 "use client";
-
-import { useClient } from "@reactive-dot/react";
-import { useEffect, useState } from "react";
-import { ChainId } from "@reactive-dot/core";
+import { ChainProvider, ReactiveDotProvider } from "@reactive-dot/react";
+import { ConnectionProvider } from "./connection-provider";
+import { SelectedAccountProvider } from "./selected-account-provider";
 import { config } from "@/config";
-import { createContext } from "react";
-import { useContext } from "react";
+import { ThemeProvider } from "./theme-provider";
+import { createContext, useContext, useState } from "react";
+import { ChainId } from "@reactive-dot/core";
 
-export type ChainSpec = {
-  tokenDecimals: number;
-  tokenSymbol: string;
-};
-
-interface PolkadotContextType {
+export interface PolkadotContextType {
   chainId: ChainId;
   activeChain: (typeof config.chains)[ChainId];
   setChainId: (chainId: ChainId) => void;
-  chainSpec: ChainSpec | null;
 }
-
-const PolkadotContext = createContext<PolkadotContextType>({
-  chainId: "polkadot",
-  activeChain: config.chains["polkadot"],
-  setChainId: () => {},
-  chainSpec: null,
-});
-
-/**
- * Polkadot Provider is a wrapper around the needed reactive-dot providers <ReactiveDotProvider> and <ChainProvider>
- * That also stores the selected account in the local storage and allows to switch between chains
- * @param param0
- * @returns
- */
-export function PolkadotProvider({
-  children,
-  defaultChainId = "polkadot",
-}: {
+export interface PolkadotProviderProps {
   children: React.ReactNode;
   defaultChainId?: ChainId;
-  chainSpec?: ChainSpec;
-}) {
-  const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
-  const [chainSpec, setChainSpec] = useState<ChainSpec | null>(null);
-  const client = useClient({
-    chainId: currentChainId,
-  });
+}
 
-  useEffect(() => {
-    const getChainInfo = async () => {
-      const chainSpec = await client.getChainSpecData();
-      setChainSpec({
-        tokenDecimals: chainSpec.properties.tokenDecimals,
-        tokenSymbol: chainSpec.properties.tokenSymbol,
-      });
-    };
-    getChainInfo();
-  }, [currentChainId]);
+export const PolkadotContext = createContext<PolkadotContextType>({
+  chainId: "paseo",
+  activeChain: config.chains["paseo"],
+  setChainId: () => {},
+});
+
+export function PolkadotProvider({
+  children,
+  defaultChainId = "paseo",
+}: PolkadotProviderProps) {
+  const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
 
   return (
-    <PolkadotContext.Provider
-      value={{
-        chainId: currentChainId,
-        activeChain: config.chains[currentChainId],
-        setChainId: setCurrentChainId,
-        chainSpec,
-      }}
-    >
-      {children}
-    </PolkadotContext.Provider>
+    <ThemeProvider defaultTheme="dark">
+      <PolkadotContext.Provider
+        value={{
+          chainId: currentChainId,
+          activeChain: config.chains[currentChainId],
+          setChainId: setCurrentChainId,
+        }}
+      >
+        <ReactiveDotProvider config={config}>
+          <ChainProvider chainId={currentChainId}>
+            <ConnectionProvider>
+              <SelectedAccountProvider>{children}</SelectedAccountProvider>
+            </ConnectionProvider>
+          </ChainProvider>
+        </ReactiveDotProvider>
+      </PolkadotContext.Provider>
+    </ThemeProvider>
   );
 }
 
-export const usePolkadotContext = () => {
+export function usePolkadotContext() {
   const context = useContext(PolkadotContext);
   if (!context) {
     throw new Error(
@@ -79,4 +58,4 @@ export const usePolkadotContext = () => {
     );
   }
   return context;
-};
+}

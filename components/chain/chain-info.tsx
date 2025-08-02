@@ -6,19 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useBlockNumber } from "@/hooks/use-block-number";
-import { WsEvent } from "polkadot-api/ws-provider/web";
 import { useMemo, useState } from "react";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
-import { config } from "@/config";
-import { useClient, useLazyLoadQuery } from "@reactive-dot/react";
 import { useConnectionStatus } from "@/providers/connection-provider";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 
 export function ChainInfo() {
   const { activeChain } = usePolkadotContext();
-  const blockNumber = useBlockNumber();
-  const { connectionStatus, clientType } = useConnectionStatus();
-
+  const { connectionStatus, clientType, blockNumber } = useConnectionStatus();
   const [isOpen, setIsOpen] = useState(false);
 
   const Trigger = useMemo(() => {

@@ -1,19 +1,16 @@
 "use client";
 
 import { useAccountBalance } from "@/hooks/use-account-balance";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
+import { useConnectionStatus } from "@/providers/connection-provider";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { useMutation, useTypedApi } from "@reactive-dot/react";
+import { useTypedApi } from "@reactive-dot/react";
 import { useEffect, useState } from "react";
 
 type TransactionBuilder<T = any> = (tx: T) => any;
 
-export function useFees(
-  txBuilder: TransactionBuilder,
-  options?: { signer?: any },
-) {
+export function useFees(txBuilder: TransactionBuilder) {
   const { selectedAccount } = useSelectedAccount();
-  const { chainSpec } = usePolkadotContext();
+  const { chainSpec } = useConnectionStatus();
   const typedApi = useTypedApi();
   const accountBalance = useAccountBalance();
 

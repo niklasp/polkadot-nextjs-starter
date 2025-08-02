@@ -7,11 +7,11 @@ import { trimAddress } from "@/lib/utils";
 import { useAccountBalance } from "@/hooks/use-account-balance";
 import { useMemo, Suspense } from "react";
 import { formatBalance } from "@/lib/format-balance";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
+import { useConnectionStatus } from "@/providers/connection-provider";
 
 function AccountBalanceCard() {
   const accountBalance = useAccountBalance();
-  const { chainSpec } = usePolkadotContext();
+  const { chainSpec } = useConnectionStatus();
 
   const formattedBalance = useMemo(() => {
     if (!accountBalance || !chainSpec) {

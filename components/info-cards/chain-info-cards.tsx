@@ -1,12 +1,12 @@
 "use client";
 import { useConnectionStatus } from "@/providers/connection-provider";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 
 export function ChainInfoCards() {
-  const { activeChain, chainSpec } = usePolkadotContext();
-  const { clientType, connectionStatus } = useConnectionStatus();
+  const { activeChain } = usePolkadotContext();
+  const { clientType, connectionStatus, chainSpec } = useConnectionStatus();
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl">
