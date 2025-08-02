@@ -24,35 +24,6 @@ export default async function Home() {
       <ChainInfoCards />
       <AccountInfoCards />
       <ExtrinsicInfoCards />
-
-      <div className="flex flex-col gap-4 text-sm">
-        <p className="text-center mb-0 pb-0">Built with</p>
-        <div className="flex gap-4 text-sm">
-          <Link href="https://nextjs.org" className="font-mono">
-            next.js
-          </Link>
-
-          <Link href="https://polkadot.js.org" className="font-mono">
-            polkadot-api (papi)
-          </Link>
-
-          <Link href="https://reactive-dot.com" className="font-mono">
-            reactive-dot
-          </Link>
-        </div>
-      </div>
-      <a
-        className="hidden sm:block"
-        href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fniklasp%2Fpolkadot-nextjs-starter"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://vercel.com/button"
-          alt="Deploy with Vercel"
-          width={103}
-          height={32}
-        />
-      </a>
     </main>
   );
 }

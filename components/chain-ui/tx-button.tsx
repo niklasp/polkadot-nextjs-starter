@@ -192,7 +192,6 @@ export function TxButton({
     return (
       <>
         {children}
-        <div className="w-px h-4 bg-background mx-1" />
         {icons.default}
       </>
     );
