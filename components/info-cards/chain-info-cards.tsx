@@ -12,7 +12,7 @@ export function ChainInfoCards() {
     <div className="flex flex-col gap-4 w-full max-w-4xl">
       <h2 className="font-bold tabular-nums text-md">Chain Info</h2>
       <div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader>
               <CardDescription>Chain Name</CardDescription>

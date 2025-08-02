@@ -3,28 +3,40 @@
 import { cn } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/connection-provider";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { useAccountBalance } from "@/hooks/use-account-balance";
 import { formatBalance } from "@/lib/format-balance";
 import type { AsyncValue, MutationError } from "@reactive-dot/core";
-import { useClient } from "@reactive-dot/react";
 import { type VariantProps } from "class-variance-authority";
 import { Check, CheckCheck, Loader2, PenLine, X } from "lucide-react";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
 
 type MutationState = AsyncValue<unknown, MutationError>;
 type MutationResult = [MutationState, (...args: any[]) => any];
 
+type FeesData = {
+  estimatedFees: bigint | null;
+  isLoading: boolean;
+  error: string | null;
+  hasInsufficientBalance: boolean;
+  chainSpec: { tokenDecimals: number; tokenSymbol: string } | null;
+};
+
+type TxWithFeesResult = {
+  mutation: MutationResult;
+  fees: FeesData;
+};
+
 export function TxButton({
   children,
   tx,
+  fees,
+  txWithFees,
   className,
   variant,
   size,
   disabled,
   resultDisplayDuration = 5000,
-  withFees = true,
   icons = {
     default: <PenLine className="w-4 h-4" />,
     loading: <Loader2 className="w-4 h-4 animate-spin" />,
@@ -35,9 +47,10 @@ export function TxButton({
   ...props
 }: {
   children: React.ReactNode;
-  tx: MutationResult;
+  txWithFees?: TxWithFeesResult;
+  tx?: MutationResult;
+  fees?: FeesData;
   resultDisplayDuration?: number; // Duration in milliseconds to show result icons
-  withFees?: boolean;
   icons?: {
     default?: React.ReactNode;
     loading?: React.ReactNode;
@@ -50,7 +63,15 @@ export function TxButton({
   const { selectedAccount } = useSelectedAccount();
   const { connectionStatus } = useConnectionStatus();
 
-  const [mutationState, execute] = tx;
+  // Extract mutation and fees from either pattern
+  const actualTx = txWithFees?.mutation || tx;
+  const actualFees = txWithFees?.fees || fees;
+
+  if (!actualTx) {
+    throw new Error("TxButton requires either 'tx' or 'txWithFees' prop");
+  }
+
+  const [mutationState, execute] = actualTx;
   const [showResult, setShowResult] = useState(false);
   const getStateInfo = () => {
     if (!mutationState)
@@ -118,7 +139,7 @@ export function TxButton({
       return (
         <>
           {children}
-          <div className="w-px h-4 bg-background mx-1" />
+
           {icons.loading}
         </>
       );
@@ -128,7 +149,7 @@ export function TxButton({
       return (
         <>
           {children}
-          <div className="w-px h-4 bg-background mx-1" />
+
           {icons.finalized}
         </>
       );
@@ -138,7 +159,7 @@ export function TxButton({
       return (
         <>
           {children}
-          <div className="w-px h-4 bg-background mx-1" />
+
           {icons.inBestBlock}
         </>
       );
@@ -148,24 +169,24 @@ export function TxButton({
       return (
         <>
           {children}
-          <div className="w-px h-4 bg-background mx-1" />
+
           {icons.error}
         </>
       );
     }
 
-    // Show different text based on why it's disabled
-    if (connectionStatus !== "connected") {
-      return "Connect to Network";
-    }
+    // // Show different text based on why it's disabled
+    // if (connectionStatus !== "connected") {
+    //   return "Connect to Network";
+    // }
 
-    if (!selectedAccount) {
-      return "Select Account";
-    }
+    // if (!selectedAccount) {
+    //   return "Select Account";
+    // }
 
-    if (!selectedAccount?.polkadotSigner) {
-      return "No Signer Available";
-    }
+    // if (!selectedAccount?.polkadotSigner) {
+    //   return "No Signer Available";
+    // }
 
     // Default state with signature icon to prevent layout shift
     return (
@@ -177,21 +198,88 @@ export function TxButton({
     );
   };
 
+  const isButtonDisabled =
+    disabled ||
+    isLoading ||
+    connectionStatus !== "connected" ||
+    !selectedAccount?.polkadotSigner ||
+    actualFees?.hasInsufficientBalance ||
+    actualFees?.isLoading; // Disable while fees are being estimated
+
+  if (!actualFees) {
+    return (
+      <Button
+        onClick={() => execute()}
+        variant={variant}
+        size={size}
+        disabled={isButtonDisabled}
+        className={cn(isLoading && "cursor-not-allowed", className)}
+        {...props}
+      >
+        {getButtonContent()}
+      </Button>
+    );
+  }
+
   return (
-    <Button
-      onClick={() => execute()}
-      variant={variant}
-      size={size}
-      disabled={
-        disabled ||
-        isLoading ||
-        connectionStatus !== "connected" ||
-        !selectedAccount?.polkadotSigner
-      }
-      className={cn(isLoading && "cursor-not-allowed", className)}
-      {...props}
-    >
-      {getButtonContent()}
-    </Button>
+    <Suspense fallback={<TxButtonSkeleton>{children}</TxButtonSkeleton>}>
+      <div className="inline-flex flex-col gap-1">
+        <Button
+          onClick={() => execute()}
+          variant={variant}
+          size={size}
+          disabled={isButtonDisabled}
+          className={cn(isLoading && "cursor-not-allowed", className)}
+          {...props}
+        >
+          {getButtonContent()}
+        </Button>
+
+        <div className="text-xs text-muted-foreground font-medium h-4 flex items-center">
+          {actualFees.estimatedFees !== null && actualFees.chainSpec ? (
+            <span>
+              Fee:{" "}
+              {formatBalance({
+                value: actualFees.estimatedFees,
+                decimals: actualFees.chainSpec.tokenDecimals,
+                unit: actualFees.chainSpec.tokenSymbol,
+                nDecimals: 4,
+              })}
+              {actualFees.hasInsufficientBalance && (
+                <span className="text-red-500 ml-1">
+                  (Insufficient balance)
+                </span>
+              )}
+            </span>
+          ) : actualFees.error ? (
+            <span className="text-red-500">{actualFees.error}</span>
+          ) : connectionStatus === "error" ? (
+            <span>Fee estimation unavailable</span>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              <span>Estimating fees...</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </Suspense>
+  );
+}
+
+export function TxButtonSkeleton({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+} & React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants>) {
+  return (
+    <div className="inline-flex flex-col gap-1">
+      <Button variant="outline" size="sm" disabled {...props}>
+        {children}
+      </Button>
+      <div className="h-4" /> {/* Fixed height placeholder for fee area */}
+    </div>
   );
 }

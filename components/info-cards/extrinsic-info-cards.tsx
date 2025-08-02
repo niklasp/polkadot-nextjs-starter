@@ -1,33 +1,34 @@
 "use client";
+import { TxButton } from "@/components/chain-ui/tx-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useConnectionStatus } from "@/providers/connection-provider";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { useMutation } from "@reactive-dot/react";
+import { useMutation, useTypedApi } from "@reactive-dot/react";
 import { Binary } from "polkadot-api";
-import { useEffect } from "react";
-import { TxButton } from "../chain-ui/tx-button";
+import { useCallback } from "react";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Skeleton } from "../ui/skeleton";
+import { useFees } from "@/hooks/use-fees";
 
 export function ExtrinsicInfoCards() {
-  const { selectedAccount } = useSelectedAccount();
   const { chainSpec, clientType, connectionStatus } = useConnectionStatus();
+  const typedApi = useTypedApi();
+  const { selectedAccount } = useSelectedAccount();
 
-  const remarkMutation = useMutation(
-    (tx) =>
+  // Extract transaction builder to reuse for both mutation and fees
+  const remarkTxBuilder = useCallback(
+    (tx: typeof typedApi.tx) =>
       tx.System.remark({
         remark: Binary.fromText("Hello from polkadot-next-js-starter!"),
       }),
-    { signer: selectedAccount?.polkadotSigner },
+    [typedApi], // Include typedApi in dependencies for proper typing
   );
 
-  useEffect(() => {
-    console.log("remarkState:", remarkMutation[0]);
-    console.log("remarkState type:", typeof remarkMutation[0]);
-    console.log(
-      "remarkState properties:",
-      Object.getOwnPropertyNames(remarkMutation[0]),
-    );
-  }, [remarkMutation]);
+  const remarkTx = useMutation(remarkTxBuilder, {
+    signer: selectedAccount?.polkadotSigner,
+  });
+  const remarkTxFees = useFees(remarkTxBuilder, {
+    signer: selectedAccount?.polkadotSigner,
+  });
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl">
@@ -40,39 +41,9 @@ export function ExtrinsicInfoCards() {
             <CardHeader>
               <CardDescription>Remark</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                <TxButton tx={remarkMutation}>Create On Chain Remark</TxButton>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>Client Type</CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                {clientType}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>Token Decimals</CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                {connectionStatus === "connected" ? (
-                  chainSpec?.tokenDecimals
-                ) : (
-                  <Skeleton className="w-8 h-6" />
-                )}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>Token Symbol</CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                {connectionStatus === "connected" ? (
-                  chainSpec?.tokenSymbol
-                ) : (
-                  <Skeleton className="w-10 h-6" />
-                )}
+                <TxButton tx={remarkTx} fees={remarkTxFees}>
+                  Create On Chain Remark
+                </TxButton>
               </CardTitle>
             </CardHeader>
           </Card>
