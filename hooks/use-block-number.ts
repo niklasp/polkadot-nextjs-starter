@@ -1,6 +1,5 @@
 "use client";
 
-import { WsEvent } from "polkadot-api/ws-provider/web";
 import type { Subscription } from "rxjs";
 import { useEffect, useRef, useState } from "react";
 import { useClient } from "@reactive-dot/react";
