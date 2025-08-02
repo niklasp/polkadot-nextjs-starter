@@ -1,15 +1,22 @@
 "use client";
-
-import { ThemeProvider } from "./theme-provider";
-import { ReactiveDotProvider } from "@reactive-dot/react";
-import { config } from "@/config";
 import { PolkadotProvider } from "./polkadot-provider";
+import { ChainProvider, ReactiveDotProvider } from "@reactive-dot/react";
+import { config } from "@/config";
+import { ThemeProvider } from "./theme-provider";
+import { ConnectionProvider } from "./connection-provider";
+import { SelectedAccountProvider } from "./selected-account-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider defaultTheme="dark">
       <ReactiveDotProvider config={config}>
-        <PolkadotProvider>{children}</PolkadotProvider>
+        <ChainProvider chainId="paseo">
+          <PolkadotProvider>
+            <ConnectionProvider>
+              <SelectedAccountProvider>{children}</SelectedAccountProvider>
+            </ConnectionProvider>
+          </PolkadotProvider>
+        </ChainProvider>
       </ReactiveDotProvider>
     </ThemeProvider>
   );

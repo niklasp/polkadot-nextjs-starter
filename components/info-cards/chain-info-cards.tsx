@@ -5,8 +5,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
 
 export function ChainInfoCards() {
-  const { activeChain } = usePolkadotContext();
-  const { chainSpec, clientType, connectionStatus } = useConnectionStatus();
+  const { activeChain, chainSpec } = usePolkadotContext();
+  const { clientType, connectionStatus } = useConnectionStatus();
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl">

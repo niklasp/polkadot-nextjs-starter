@@ -1,25 +1,29 @@
 "use client";
 
-import { ReactiveDotProvider, ChainProvider } from "@reactive-dot/react";
-import { SelectedAccountProvider } from "./selected-account-provider";
-import { useState } from "react";
+import { useClient } from "@reactive-dot/react";
+import { useEffect, useState } from "react";
 import { ChainId } from "@reactive-dot/core";
 import { config } from "@/config";
 import { createContext } from "react";
-import { ThemeProvider } from "./theme-provider";
 import { useContext } from "react";
-import { ConnectionProvider } from "./connection-provider";
+
+export type ChainSpec = {
+  tokenDecimals: number;
+  tokenSymbol: string;
+};
 
 interface PolkadotContextType {
   chainId: ChainId;
   activeChain: (typeof config.chains)[ChainId];
   setChainId: (chainId: ChainId) => void;
+  chainSpec: ChainSpec | null;
 }
 
 const PolkadotContext = createContext<PolkadotContextType>({
   chainId: "polkadot",
   activeChain: config.chains["polkadot"],
   setChainId: () => {},
+  chainSpec: null,
 });
 
 /**
@@ -34,27 +38,36 @@ export function PolkadotProvider({
 }: {
   children: React.ReactNode;
   defaultChainId?: ChainId;
+  chainSpec?: ChainSpec;
 }) {
   const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
+  const [chainSpec, setChainSpec] = useState<ChainSpec | null>(null);
+  const client = useClient({
+    chainId: currentChainId,
+  });
+
+  useEffect(() => {
+    const getChainInfo = async () => {
+      const chainSpec = await client.getChainSpecData();
+      setChainSpec({
+        tokenDecimals: chainSpec.properties.tokenDecimals,
+        tokenSymbol: chainSpec.properties.tokenSymbol,
+      });
+    };
+    getChainInfo();
+  }, [currentChainId]);
 
   return (
-    <ThemeProvider defaultTheme="dark">
-      <PolkadotContext.Provider
-        value={{
-          chainId: currentChainId,
-          activeChain: config.chains[currentChainId],
-          setChainId: setCurrentChainId,
-        }}
-      >
-        <ReactiveDotProvider config={config}>
-          <ChainProvider chainId={currentChainId}>
-            <ConnectionProvider>
-              <SelectedAccountProvider>{children}</SelectedAccountProvider>
-            </ConnectionProvider>
-          </ChainProvider>
-        </ReactiveDotProvider>
-      </PolkadotContext.Provider>
-    </ThemeProvider>
+    <PolkadotContext.Provider
+      value={{
+        chainId: currentChainId,
+        activeChain: config.chains[currentChainId],
+        setChainId: setCurrentChainId,
+        chainSpec,
+      }}
+    >
+      {children}
+    </PolkadotContext.Provider>
   );
 }
 

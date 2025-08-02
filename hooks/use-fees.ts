@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountBalance } from "@/hooks/use-account-balance";
-import { useConnectionStatus } from "@/providers/connection-provider";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
 import { useMutation, useTypedApi } from "@reactive-dot/react";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ export function useFees(
   options?: { signer?: any },
 ) {
   const { selectedAccount } = useSelectedAccount();
-  const { chainSpec } = useConnectionStatus();
+  const { chainSpec } = usePolkadotContext();
   const typedApi = useTypedApi();
   const accountBalance = useAccountBalance();
 

@@ -4,10 +4,9 @@
   "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "pnpm run generate:papi && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:papi": "papi",
     "postinstall": "papi",
     "add-papi-demo-data": "pnpm papi add --skip-codegen -n paseo paseo && pnpm papi add --skip-codegen -n polkadot polkadot && pnpm papi add --skip-codegen -n paseo_asset_hub paseo_asset_hub && pnpm papi add --skip-codegen -n polkadot_asset_hub polkadot_asset_hub && pnpm papi"
   },

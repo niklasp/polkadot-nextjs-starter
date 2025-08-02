@@ -11,16 +11,10 @@ import { getWsProvider } from "polkadot-api/ws-provider/web";
 import { createLightClientProvider } from "@reactive-dot/core/providers/light-client.js";
 
 type ConnectionStatus = "connected" | "error" | "connecting" | "close";
-export type ChainSpec = {
-  tokenDecimals: number;
-  tokenSymbol: string;
-};
-
 export type ConnectionContextType = {
   connectionStatus: ConnectionStatus;
   setConnectionStatus: (status: ConnectionStatus) => void;
   clientType: "lightclient" | "ws";
-  chainSpec: ChainSpec | null;
 };
 
 export const ConnectionContext = createContext<
@@ -41,7 +35,6 @@ export function ConnectionProvider({
       ? "ws"
       : "lightclient",
   );
-  const [chainSpec, setChainSpec] = useState<ChainSpec | null>(null);
 
   useEffect(() => {
     console.log("connection provider changed", chainId, client);
@@ -54,25 +47,10 @@ export function ConnectionProvider({
     setConnectionStatus("connecting");
     let hasConnected = false;
 
-    const getChainInfo = async () => {
-      try {
-        // you can add more chain info here if you want e.g
-        // const nodeVersion = await client._request("system_version", []);
-        const chainSpec = await client.getChainSpecData();
-        setChainSpec({
-          tokenDecimals: chainSpec.properties.tokenDecimals,
-          tokenSymbol: chainSpec.properties.tokenSymbol,
-        });
-      } catch (error) {
-        console.log("Failed to get chain info:", error);
-      }
-    };
-
     const subscription = client.finalizedBlock$.subscribe({
       next: () => {
         if (!hasConnected) {
           setConnectionStatus("connected");
-          getChainInfo();
           hasConnected = true;
           console.log("Connected to chain:", chainId);
         }
@@ -87,7 +65,7 @@ export function ConnectionProvider({
     return () => {
       subscription.unsubscribe();
     };
-  }, [chainId, client]);
+  }, [chainId, client]); // Include client to avoid stale closures
 
   return (
     <ConnectionContext.Provider
@@ -95,7 +73,6 @@ export function ConnectionProvider({
         connectionStatus,
         setConnectionStatus,
         clientType,
-        chainSpec,
       }}
     >
       {children}

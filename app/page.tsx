@@ -21,9 +21,11 @@ export default async function Home() {
         A starter project for your next Polkadot dApp.
       </p>
 
-      <ChainInfoCards />
-      <AccountInfoCards />
-      <ExtrinsicInfoCards />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ChainInfoCards />
+        <AccountInfoCards />
+        <ExtrinsicInfoCards />
+      </Suspense>
     </main>
   );
 }

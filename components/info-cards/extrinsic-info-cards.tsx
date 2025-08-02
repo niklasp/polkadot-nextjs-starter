@@ -1,7 +1,5 @@
 "use client";
 import { TxButton } from "@/components/chain-ui/tx-button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useConnectionStatus } from "@/providers/connection-provider";
 import { useSelectedAccount } from "@/providers/selected-account-provider";
 import { useMutation, useTypedApi } from "@reactive-dot/react";
 import { Binary } from "polkadot-api";
@@ -10,7 +8,6 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { useFees } from "@/hooks/use-fees";
 
 export function ExtrinsicInfoCards() {
-  const { chainSpec, clientType, connectionStatus } = useConnectionStatus();
   const typedApi = useTypedApi();
   const { selectedAccount } = useSelectedAccount();
 

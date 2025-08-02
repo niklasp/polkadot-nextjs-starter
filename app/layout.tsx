@@ -27,7 +27,9 @@ export default function RootLayout({
       >
         <Providers>
           <NavBar />
-          <main className="min-h-screen">{children}</main>
+          <Suspense fallback={<div>Loading...</div>}>
+            <main className="min-h-screen">{children}</main>
+          </Suspense>
           <Footer />
           <Suspense fallback={<div>Loading...</div>}>
             <ChainInfo />

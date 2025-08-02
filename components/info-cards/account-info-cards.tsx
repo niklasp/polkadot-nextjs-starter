@@ -7,15 +7,13 @@ import { trimAddress } from "@/lib/utils";
 import { useAccountBalance } from "@/hooks/use-account-balance";
 import { useMemo, Suspense } from "react";
 import { formatBalance } from "@/lib/format-balance";
-import { useConnectionStatus } from "@/providers/connection-provider";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 
-// Separate component for balance that uses the suspending query
 function AccountBalanceCard() {
   const accountBalance = useAccountBalance();
-  const { chainSpec } = useConnectionStatus();
+  const { chainSpec } = usePolkadotContext();
 
   const formattedBalance = useMemo(() => {
-    // Don't format if we don't have actual balance data
     if (!accountBalance || !chainSpec) {
       return <Skeleton className="h-6 w-32" />;
     }
@@ -40,7 +38,6 @@ function AccountBalanceCard() {
   );
 }
 
-// Loading fallback for balance card
 function BalanceCardSkeleton() {
   return (
     <Card>
