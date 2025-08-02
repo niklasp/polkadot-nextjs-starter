@@ -1,7 +1,7 @@
 {
   "name": "polkadot-nextjs-starter",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "pnpm run generate:papi && next build",
@@ -51,7 +51,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.1.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.4"
   },
   "overrides": {
     "react-copy-to-clipboard": {
@@ -68,7 +68,8 @@
   "pnpm": {
     "overrides": {
       "react-copy-to-clipboard@*>react": "$react",
-      "react-copy-to-clipboard@*>react-dom": "$react-dom"
+      "react-copy-to-clipboard@*>react-dom": "$react-dom",
+      "typescript": "^5.8.4"
     }
   },
   "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
