@@ -1,11 +1,11 @@
 import { paseo, polkadot, polkadot_asset_hub } from "@polkadot-api/descriptors";
-import { getWsProvider } from "@polkadot-api/ws-provider/web";
+import { getWsProvider } from "polkadot-api/ws-provider/web";
 import { defineConfig } from "@reactive-dot/core";
 import { createLightClientProvider } from "@reactive-dot/core/providers/light-client.js";
 import { InjectedWalletProvider } from "@reactive-dot/core/wallets.js";
 import { logos } from "@/icons/logos";
 
-const lightClientProvider = createLightClientProvider();
+// const lightClientProvider = createLightClientProvider();
 
 export const config = defineConfig({
   chains: {
