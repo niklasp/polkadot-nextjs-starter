@@ -4,15 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "pnpm run generate:papi && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "pnpm papi",
+    "generate:papi": "papi",
+    "postinstall": "papi",
     "add-papi-demo-data": "pnpm papi add --skip-codegen -n paseo paseo && pnpm papi add --skip-codegen -n polkadot polkadot && pnpm papi add --skip-codegen -n paseo_asset_hub paseo_asset_hub && pnpm papi add --skip-codegen -n polkadot_asset_hub polkadot_asset_hub && pnpm papi"
   },
   "dependencies": {
     "@polkadot-api/descriptors": "file:.papi/descriptors",
-    "@polkadot/react-identicon": "^3.13.1",
+    "@polkadot/react-identicon": "^3.15.3",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-dropdown-menu": "^2.1.14",
     "@radix-ui/react-separator": "^1.1.6",
@@ -50,5 +51,24 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.1.5",
     "typescript": "^5.8.3"
-  }
+  },
+  "overrides": {
+    "react-copy-to-clipboard": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "@polkadot/react-identicon": {
+      "react-copy-to-clipboard": {
+        "react": "$react",
+        "react-dom": "$react-dom"
+      }
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "react-copy-to-clipboard@*>react": "$react",
+      "react-copy-to-clipboard@*>react-dom": "$react-dom"
+    }
+  },
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
