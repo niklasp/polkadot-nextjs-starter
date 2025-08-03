@@ -3,12 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import { Identicon } from "@polkadot/react-identicon";
-import { allSubstrateWallets, SubstrateWalletPlatform } from "./wallets";
-import { isMobile } from "@/lib/is-mobile";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
 import { MultiViewDialog, DialogView } from "../ui/multi-view-dialog";
 import { ViewSelectWallet } from "./view-select-wallet";
 import { ViewSelectAccount } from "./view-select-account";
+import { useSelectedAccount } from "@/providers/selected-account-provider";
+import { useConnectedWallets, useWallets } from "@reactive-dot/react";
 
 export function WalletSelect({
   className,
@@ -17,15 +16,13 @@ export function WalletSelect({
   className?: string;
   placeholder?: string;
 }) {
-  const { selectedAccount, selectedExtensions } = usePolkadotExtension();
-
-  const hasConnectedAccounts = selectedExtensions.some((extension) =>
-    extension.getAccounts().some((account) => account.address),
-  );
+  const { selectedAccount } = useSelectedAccount();
+  const wallets = useWallets();
+  const connectedWallets = useConnectedWallets();
 
   const views: DialogView[] = [
     {
-      title: `Connect Wallets (${selectedExtensions.length} connected)`,
+      title: `Connect Wallets (${wallets.length} connected)`,
       description:
         "Select a wallet to connect to your account. If you don't have a wallet installed, you can install one from the list.",
       content: ({ next, previous }) => (
@@ -41,7 +38,7 @@ export function WalletSelect({
 
   return (
     <MultiViewDialog
-      initialView={hasConnectedAccounts ? 1 : 0}
+      initialView={connectedWallets.length > 0 ? 1 : 0}
       trigger={
         <Button
           variant="outline"

@@ -1,45 +1,47 @@
 import { Button } from "../ui/button";
 import { ViewNavigationProps } from "../ui/multi-view-dialog";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
-import { SubstrateWalletPlatform } from "./wallets";
-import { isMobile } from "@/lib/is-mobile";
+import {
+  useWallets,
+  useAccounts,
+  useConnectedWallets,
+  useWalletDisconnector,
+  useWalletConnector,
+} from "@reactive-dot/react";
+
 import { allSubstrateWallets } from "./wallets";
 import Image from "next/image";
 import { DialogFooter } from "../ui/dialog";
 import { ArrowRight, Zap, ZapOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSelectedAccount } from "@/providers/selected-account-provider";
 
 export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
-  const { onToggleExtension, availableExtensions, selectedExtensions } =
-    usePolkadotExtension();
+  const wallets = useWallets();
+  const accounts = useAccounts();
+  const connectedWallets = useConnectedWallets();
+  const { selectedAccount, setSelectedAccount } = useSelectedAccount();
 
-  // only show wallets that are available on the current platform (mobile or browser)
-  const systemWallets = allSubstrateWallets
-    .filter((wallet) =>
-      isMobile()
-        ? wallet.platforms.includes(SubstrateWalletPlatform.Android) ||
-          wallet.platforms.includes(SubstrateWalletPlatform.iOS)
-        : wallet.platforms.includes(SubstrateWalletPlatform.Browser),
-    )
-    .sort((a, b) =>
-      availableExtensions.includes(a.id)
-        ? -1
-        : availableExtensions.includes(b.id)
-          ? 1
-          : 0,
-    );
+  const [_, connectWallet] = useWalletConnector();
+  const [__, disconnectWallet] = useWalletDisconnector();
 
   return (
     <div className="flex flex-col gap-2">
-      {systemWallets.map((wallet, index) => {
-        const connectedExtension = selectedExtensions.find(
-          (ext) => ext.name === wallet.id,
+      {wallets.map((wallet, index) => {
+        console.log(wallet);
+        const walletMetadata = allSubstrateWallets.find(
+          (w) => w.id === wallet.name,
         );
-        const isConnected = !!connectedExtension;
-        const accountCount =
-          connectedExtension
-            ?.getAccounts()
-            .filter((acc) => acc.type === "sr25519").length ?? 0;
+
+        console.log(wallet.name, walletMetadata);
+        const isConnected = connectedWallets.some(
+          (w) => w.name === wallet.name,
+        );
+        // Get accounts for this specific wallet
+        const walletAccounts = accounts.filter((account) => {
+          // Match accounts to their specific wallet by checking account.wallet property
+          return account.wallet === wallet;
+        });
+        const accountCount = walletAccounts.length;
 
         return (
           <Button
@@ -47,10 +49,15 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
             variant="ghost"
             className="relative w-full flex flex-row items-center justify-between [&_svg]:size-auto gap-2 h-14"
             onClick={() => {
-              if (availableExtensions.includes(wallet.id)) {
-                onToggleExtension(wallet.id);
+              if (wallet) {
+                if (isConnected) {
+                  disconnectWallet(wallet);
+                } else {
+                  connectWallet(wallet);
+                  console.log("Wallet connected");
+                }
               } else {
-                window.open(wallet.urls.website, "_blank");
+                window.open(walletMetadata?.urls.website, "_blank");
               }
             }}
           >
@@ -63,14 +70,14 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               />
               <div className="flex flex-row items-center justify-start gap-2">
                 <Image
-                  src={wallet.logoUrls[0]}
+                  src={walletMetadata?.logoUrls[0] ?? ""}
                   alt={wallet.name}
                   className="w-[32px] h-[32px]"
                   width={32}
                   height={32}
                 />
                 <div className="flex flex-col items-start">
-                  <span className="font-bold">{wallet.name}</span>
+                  <span className="font-bold">{walletMetadata?.name}</span>
                   <span
                     className={cn(
                       "text-xs text-muted-foreground overflow-hidden transition-all duration-300 ease-in-out",
@@ -84,7 +91,7 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               </div>
             </div>
             <>
-              {!availableExtensions.includes(wallet.id) ? (
+              {!wallet ? (
                 "Install"
               ) : isConnected ? (
                 <span className="text-red-600 dark:text-red-400 flex flex-row items-center gap-2">
@@ -104,7 +111,7 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
           variant="default"
           onClick={next}
           size="lg"
-          disabled={!selectedExtensions.length}
+          disabled={!wallets.length}
           className="flex flex-row items-center gap-2"
         >
           Go to accounts <ArrowRight className="w-3 h-3" />
