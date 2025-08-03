@@ -38,5 +38,5 @@ export const config = defineConfig({
     },
   },
   wallets: [new InjectedWalletProvider()],
-  ssr: true,
+  ssr: false,
 });

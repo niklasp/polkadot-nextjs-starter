@@ -8,6 +8,7 @@ import { Loader } from "lucide-react";
 import type { Metadata } from "next";
 import "./globals.css";
 import { PolkadotProvider } from "@/providers/polkadot-provider";
+import { ClientProvider } from "@/providers/client-provider";
 
 export const metadata: Metadata = {
   title: "Polkadot Next.js Starter",
@@ -24,13 +25,13 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
-        <PolkadotProvider defaultChainId="polkadot">
+        <ClientProvider defaultChainId="polkadot">
           <NavBar />
           <main className="min-h-screen">{children}</main>
           <Footer />
           <ChainInfo />
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
-        </PolkadotProvider>
+        </ClientProvider>
         <Analytics />
       </body>
     </html>
