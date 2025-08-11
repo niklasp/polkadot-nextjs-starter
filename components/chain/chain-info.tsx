@@ -6,68 +6,56 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useBlockNumber } from "@/hooks/use-block-number";
-import { WsEvent } from "polkadot-api/ws-provider/web";
 import { useMemo, useState } from "react";
-import { useLightClientApi } from "@/providers/lightclient-api-provider";
+import { useConnectionStatus } from "@/providers/connection-provider";
+import { usePolkadotContext } from "@/providers/polkadot-provider";
 
 export function ChainInfo() {
-  const { connectionStatus, activeChain } = useLightClientApi();
+  const { activeChain } = usePolkadotContext();
+  const { connectionStatus, clientType, blockNumber } = useConnectionStatus();
   const [isOpen, setIsOpen] = useState(false);
-  const blockNumber = useBlockNumber();
-
-  const status: "connected" | "error" | "connecting" =
-    connectionStatus?.type === WsEvent.CONNECTED && blockNumber
-      ? "connected"
-      : connectionStatus?.type === WsEvent.ERROR ||
-          connectionStatus?.type === WsEvent.CLOSE
-        ? "error"
-        : "connecting";
 
   const Trigger = useMemo(() => {
     return (
       <div className="tabular-nums font-light h-6 border-foreground/20 border rounded-md px-2 text-[12px] cursor-default">
-        {status === "connected" ? (
+        {connectionStatus === "connected" ? (
           <>
             <span className="block rounded-full w-2 h-2 bg-green-400 animate-pulse mr-1" />
           </>
-        ) : status === "error" ? (
+        ) : connectionStatus === "error" ? (
           <>
             <span className="block rounded-full w-2.5 h-2.5 bg-red-400" />
           </>
         ) : (
           <>
             <span className="block rounded-full w-2 h-2 bg-yellow-400 animate-pulse" />
-            &nbsp; connecting to {activeChain?.name} via lightclient
+            &nbsp; connecting to {activeChain?.name} via {clientType}
           </>
         )}
-        {status === "connected" && blockNumber && (
+        {connectionStatus === "connected" && blockNumber && (
           <span className="text-[10px]">{`#${blockNumber}`}</span>
         )}
       </div>
     );
-  }, [status, blockNumber, activeChain]);
+  }, [connectionStatus, blockNumber, activeChain, clientType]);
 
   const Content = useMemo(() => {
     return (
       <>
-        {status === "connected" ? (
+        {connectionStatus === "connected" ? (
           <>
-            connected to <b>{activeChain?.name}</b> via lightclient
+            connected to <b>{activeChain?.name}</b> via {clientType}
           </>
-        ) : status === "error" ? (
-          <>
-            error:{" "}
-            {connectionStatus?.type === WsEvent.ERROR
-              ? "Connection error"
-              : "Connection closed"}
-          </>
+        ) : connectionStatus === "error" ? (
+          <>error: Connection error</>
         ) : (
-          <>connecting to {activeChain?.name} via lightclient</>
+          <>
+            connecting to {activeChain?.name} via {clientType}
+          </>
         )}
       </>
     );
-  }, [status, activeChain, connectionStatus]);
+  }, [activeChain, connectionStatus, clientType]);
 
   return (
     <TooltipProvider>

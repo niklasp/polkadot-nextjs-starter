@@ -77,7 +77,7 @@ export const subwallet: SubstrateWallet = {
 };
 
 export const nova: SubstrateWallet = {
-  id: "polkadot-js",
+  id: "nova",
   name: "Nova Wallet",
   platforms: [SubstrateWalletPlatform.Android, SubstrateWalletPlatform.iOS],
   urls: {

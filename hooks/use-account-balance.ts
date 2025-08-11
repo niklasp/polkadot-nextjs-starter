@@ -1,42 +1,23 @@
 "use client";
 
-import { useLightClientApi } from "@/providers/lightclient-api-provider";
-import { usePolkadotExtension } from "@/providers/polkadot-extension-provider";
-import { useEffect, useState } from "react";
-
-export type AccountBalance = {
-  free: bigint;
-  reserved: bigint;
-  frozen: bigint;
-  flags: bigint;
-  lastUpdated?: Date;
-};
+import { idle } from "@reactive-dot/core";
+import { useLazyLoadQuery } from "@reactive-dot/react";
+import { useSelectedAccount } from "@/providers/selected-account-provider";
 
 export function useAccountBalance() {
-  const { api } = useLightClientApi();
-  const { selectedAccount } = usePolkadotExtension();
-  const [accountBalance, setAccountBalance] = useState<AccountBalance | null>(
-    null,
+  const { selectedAccount } = useSelectedAccount();
+
+  const accountInfo = useLazyLoadQuery((builder) =>
+    selectedAccount?.address
+      ? builder.storage("System", "Account", [selectedAccount.address], {
+          at: "best",
+        })
+      : undefined,
   );
 
-  useEffect(() => {
-    if (!selectedAccount || !api) return;
-    const subscription = api?.query.System.Account.watchValue(
-      selectedAccount?.address,
-      "best",
-    ).subscribe((value) => {
-      console.log("value", value);
-      setAccountBalance({
-        ...value.data,
-        lastUpdated: new Date(),
-      });
-    });
+  if (accountInfo === idle) {
+    return;
+  }
 
-    return () => {
-      setAccountBalance(null);
-      subscription?.unsubscribe();
-    };
-  }, [selectedAccount, api]);
-
-  return accountBalance;
+  return accountInfo?.data;
 }
