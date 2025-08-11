@@ -631,7 +631,7 @@ packages:
   '@polkadot-api/descriptors@file:.papi/descriptors':
     resolution: {directory: .papi/descriptors, type: directory}
     peerDependencies:
-      polkadot-api: '*'
+      polkadot-api: '>=1.9.11'
 
   '@polkadot-api/ink-contracts@0.3.0':
     resolution: {integrity: sha512-OjFeOIAE1DGzBjnDXExg7DuBbjnz/xgiN1WuKpmF3CC6TqIW55Ay6rhLah4/i1yMKvFmj4VfyqSwhF78JLsk5A==}

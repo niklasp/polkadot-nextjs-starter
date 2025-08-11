@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@polkadot-api/descriptors": "file:.papi/descriptors",
-    "@polkadot/react-identicon": "^3.13.1",
+    "@polkadot/react-identicon": "^3.14.1",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-dropdown-menu": "^2.1.14",
     "@radix-ui/react-separator": "^1.1.6",
