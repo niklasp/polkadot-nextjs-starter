@@ -5,8 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  react-copy-to-clipboard@*>react: ^19.1.0
-  react-copy-to-clipboard@*>react-dom: ^19.1.0
+  react-copy-to-clipboard@*>react: ^19.1.1
+  react-copy-to-clipboard@*>react-dom: ^19.1.1
   typescript: ^5.8.4
 
 importers:
@@ -126,7 +126,7 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11
       typescript:
-        specifier: ^5.9.2
+        specifier: ^5.8.4
         version: 5.9.2
 
 packages:
@@ -3022,7 +3022,7 @@ packages:
   react-copy-to-clipboard@5.1.0:
     resolution: {integrity: sha512-k61RsNgAayIJNoy9yDsYzDe/yAZAzEbEgcz3DZMhF686LEyukcE1hzurxe85JandPUG+yTfGVFzuEw3xt8WP/A==}
     peerDependencies:
-      react: ^19.1.0
+      react: ^19.1.1
 
   react-dom@19.1.1:
     resolution: {integrity: sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw==}
