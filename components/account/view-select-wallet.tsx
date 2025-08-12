@@ -1,47 +1,39 @@
 import { Button } from "../ui/button";
 import { ViewNavigationProps } from "../ui/multi-view-dialog";
-import {
-  useWallets,
-  useAccounts,
-  useConnectedWallets,
-  useWalletDisconnector,
-  useWalletConnector,
-} from "@reactive-dot/react";
 
-import { allSubstrateWallets } from "./wallets";
 import Image from "next/image";
 import { DialogFooter } from "../ui/dialog";
-import { ArrowRight, Zap, ZapOff } from "lucide-react";
+import { ArrowRight, Plus, Zap, ZapOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSelectedAccount } from "@/providers/selected-account-provider";
+
+import { ExtensionWallet, useTypink } from "typink";
+import { ClientOnly } from "@/components/ui/client-only";
 
 export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
-  const wallets = useWallets();
-  const accounts = useAccounts();
-  const connectedWallets = useConnectedWallets();
-  const { selectedAccount, setSelectedAccount } = useSelectedAccount();
+  const { wallets, accounts, connectedWallet, connectWallet, disconnect } =
+    useTypink();
 
-  const [_, connectWallet] = useWalletConnector();
-  const [__, disconnectWallet] = useWalletDisconnector();
+  const sortedWallets = wallets.sort((a, b) => {
+    if (a.installed && !b.installed) return -1;
+    if (!a.installed && b.installed) return 1;
+    return 0;
+  });
 
   return (
     <div className="flex flex-col gap-2">
-      {wallets.map((wallet, index) => {
+      {sortedWallets.map((wallet, index) => {
         console.log(wallet);
-        const walletMetadata = allSubstrateWallets.find(
-          (w) => w.id === wallet.name,
-        );
 
-        console.log(wallet.name, walletMetadata);
-        const isConnected = connectedWallets.some(
-          (w) => w.name === wallet.name,
-        );
+        const isConnected = connectedWallet?.id === wallet.id;
+
+        console.log(wallet.name);
+
         // Get accounts for this specific wallet
-        const walletAccounts = accounts.filter((account) => {
-          // Match accounts to their specific wallet by checking account.wallet property
-          return account.wallet === wallet;
-        });
-        const accountCount = walletAccounts.length;
+        // const walletAccounts = accounts.filter((account) => {
+        //   // Match accounts to their specific wallet by checking account.wallet property
+        //   return account === wallet;
+        // });
+        const accountCount = accounts.length;
 
         return (
           <Button
@@ -49,15 +41,17 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
             variant="ghost"
             className="relative w-full flex flex-row items-center justify-between [&_svg]:size-auto gap-2 h-14"
             onClick={() => {
-              if (wallet) {
+              if (wallet.installed) {
                 if (isConnected) {
-                  disconnectWallet(wallet);
+                  disconnect();
                 } else {
-                  connectWallet(wallet);
+                  connectWallet(wallet.id);
                   console.log("Wallet connected");
                 }
               } else {
-                window.open(walletMetadata?.urls.website, "_blank");
+                if (wallet instanceof ExtensionWallet) {
+                  window.open(wallet.installUrl, "_blank");
+                }
               }
             }}
           >
@@ -70,14 +64,14 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               />
               <div className="flex flex-row items-center justify-start gap-2">
                 <Image
-                  src={walletMetadata?.logoUrls[0] ?? ""}
+                  src={wallet.logo ?? ""}
                   alt={wallet.name}
                   className="w-[32px] h-[32px]"
                   width={32}
                   height={32}
                 />
                 <div className="flex flex-col items-start">
-                  <span className="font-bold">{walletMetadata?.name}</span>
+                  <span className="font-bold">{wallet.name}</span>
                   <span
                     className={cn(
                       "text-xs text-muted-foreground overflow-hidden transition-all duration-300 ease-in-out",
@@ -91,8 +85,12 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
               </div>
             </div>
             <>
-              {!wallet ? (
-                "Install"
+              {!wallet.installed ? (
+                <>
+                  <span className="flex flex-row items-center gap-2">
+                    <Plus className="w-4 h-4" /> Install
+                  </span>
+                </>
               ) : isConnected ? (
                 <span className="text-red-600 dark:text-red-400 flex flex-row items-center gap-2">
                   <ZapOff className="w-4 h-4" /> Disconnect

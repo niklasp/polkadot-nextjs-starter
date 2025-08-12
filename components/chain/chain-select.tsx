@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,21 +10,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { StatusChange, WsEvent } from "polkadot-api/ws-provider/web";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { useMemo } from "react";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
-import { config } from "@/config";
-import { ChainId } from "@reactive-dot/core";
+
+import { useChainId, useSupportedNetworks } from "@/hooks/polkadot-hooks";
+import Image from "next/image";
+import { useCallback, useMemo } from "react";
 
 export function ChainSelect() {
-  const { chainId, setChainId, activeChain } = usePolkadotContext();
+  const { chainId: activeChainId, setChainId } = useChainId();
+  const supportedNetworks = useSupportedNetworks();
+
+  const ChainLogo = useCallback(
+    (networkId: string) => {
+      const network = supportedNetworks.find(
+        (network) => network.id === networkId,
+      );
+      if (network?.logo && network?.name !== "" && network?.logo !== "") {
+        return (
+          <Image src={network.logo} alt={network.name} width={20} height={20} />
+        );
+      } else {
+        return "N/A";
+      }
+    },
+    [supportedNetworks],
+  );
 
   const Trigger = useMemo(() => {
     // if (connectionStatus?.type === WsEvent.ERROR) {
@@ -54,10 +61,10 @@ export function ChainSelect() {
 
     return (
       <Button variant="ghost" size="icon">
-        {activeChain?.icon}
+        {ChainLogo(activeChainId)}
       </Button>
     );
-  }, [activeChain]);
+  }, [ChainLogo, activeChainId]);
 
   return (
     <DropdownMenu>
@@ -66,19 +73,18 @@ export function ChainSelect() {
         <DropdownMenuLabel>Select Chain</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
-          value={chainId}
+          value={activeChainId}
           onValueChange={(value) => {
             if (value) {
-              setChainId(value as ChainId);
+              setChainId(value as string);
             }
           }}
         >
-          {Object.keys(config.chains).map((chainId) => {
-            const chain = config.chains[chainId as keyof typeof config.chains];
+          {supportedNetworks.map((network) => {
             return (
-              <DropdownMenuRadioItem key={chainId} value={chainId}>
-                {chain.icon}
-                {chain.name}
+              <DropdownMenuRadioItem key={network.id} value={network.id}>
+                {ChainLogo(network.id)}
+                {network.name}
               </DropdownMenuRadioItem>
             );
           })}

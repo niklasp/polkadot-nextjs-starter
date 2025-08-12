@@ -1,43 +1,56 @@
 "use client";
 
-import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Skeleton } from "../ui/skeleton";
-import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { trimAddress } from "@/lib/utils";
-import { useAccountBalance } from "@/hooks/use-account-balance";
-import { useMemo, Suspense } from "react";
-import { formatBalance } from "@/lib/format-balance";
-import { useConnectionStatus } from "@/providers/connection-provider";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-function BalanceValue() {
-  const accountBalance = useAccountBalance(); // ← This uses useLazyLoadQuery which suspends
-  const { chainSpec } = useConnectionStatus();
+import {
+  useActiveChain,
+  useIsConnected,
+  useSelectedAccount,
+} from "@/hooks/polkadot-hooks";
+import { useAccountBalance } from "@/hooks/use-account-balance";
+import { formatBalance } from "@/lib/format-balance";
+import { trimAddress } from "@/lib/utils";
+import { useMemo } from "react";
+import { type InjectedAccount } from "typink";
+
+function AccountBalanceCard({
+  selectedAccount,
+}: {
+  selectedAccount?: InjectedAccount;
+}) {
+  const accountBalance = useAccountBalance();
+  const activeChain = useActiveChain();
+  const isConnected = useIsConnected();
 
   const formattedBalance = useMemo(() => {
-    if (!accountBalance || !chainSpec) {
+    if (!selectedAccount?.address) {
+      return "No account selected";
+    }
+
+    if (!isConnected) {
       return <Skeleton className="h-6 w-32" />;
     }
 
     return formatBalance({
-      value: accountBalance.free,
-      decimals: chainSpec.tokenDecimals,
-      unit: chainSpec.tokenSymbol,
+      value: BigInt(accountBalance?.free ?? "0"),
+      decimals: activeChain.decimals,
+      unit: activeChain.symbol,
       nDecimals: 4,
     });
-  }, [accountBalance, chainSpec]);
+  }, [accountBalance, activeChain, selectedAccount, isConnected]);
 
-  return formattedBalance ?? "Loading...";
-}
-
-function AccountBalanceCard() {
   return (
     <Card>
       <CardHeader>
         <CardDescription>Account Balance</CardDescription>
         <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-          <Suspense fallback={<Skeleton className="h-6 w-32" />}>
-            <BalanceValue />
-          </Suspense>
+          {formattedBalance}
         </CardTitle>
       </CardHeader>
     </Card>
@@ -45,7 +58,7 @@ function AccountBalanceCard() {
 }
 
 export function AccountInfoCards() {
-  const { selectedAccount } = useSelectedAccount();
+  const selectedAccount = useSelectedAccount();
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl">
@@ -70,15 +83,7 @@ export function AccountInfoCards() {
               </CardTitle>
             </CardHeader>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardDescription>Wallet</CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                {selectedAccount?.wallet?.name ?? "No wallet selected"}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <AccountBalanceCard />
+          <AccountBalanceCard selectedAccount={selectedAccount} />
         </div>
       </div>
     </div>

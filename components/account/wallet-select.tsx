@@ -6,8 +6,8 @@ import { Identicon } from "@polkadot/react-identicon";
 import { MultiViewDialog, DialogView } from "../ui/multi-view-dialog";
 import { ViewSelectWallet } from "./view-select-wallet";
 import { ViewSelectAccount } from "./view-select-account";
-import { useSelectedAccount } from "@/providers/selected-account-provider";
-import { useConnectedWallets, useWallets } from "@reactive-dot/react";
+
+import { useTypink } from "typink";
 
 export function WalletSelect({
   className,
@@ -16,9 +16,7 @@ export function WalletSelect({
   className?: string;
   placeholder?: string;
 }) {
-  const { selectedAccount } = useSelectedAccount();
-  const wallets = useWallets();
-  const connectedWallets = useConnectedWallets();
+  const { accounts, wallets, connectedWallet, connectedAccount } = useTypink();
 
   const views: DialogView[] = [
     {
@@ -38,21 +36,21 @@ export function WalletSelect({
 
   return (
     <MultiViewDialog
-      initialView={connectedWallets.length > 0 ? 1 : 0}
+      initialView={connectedWallet ? 1 : 0}
       trigger={
         <Button
           variant="outline"
           className="transition-[min-width] duration-300"
         >
           <Wallet className="w-4 h-4" /> {placeholder}
-          {selectedAccount?.name && (
+          {connectedAccount?.name && (
             <span className="hidden sm:block max-w-[100px] truncate">
-              {selectedAccount?.name}
+              {connectedAccount?.name}
             </span>
           )}
-          {selectedAccount?.address && (
+          {connectedAccount?.address && (
             <Identicon
-              value={selectedAccount?.address}
+              value={connectedAccount?.address}
               size={30}
               theme="polkadot"
               className="[&>svg>circle:first-child]:fill-none"

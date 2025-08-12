@@ -6,56 +6,53 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useBlockNumber } from "@/hooks/use-block-number";
+import { useActiveChain, useIsConnected } from "@/hooks/polkadot-hooks";
 import { useMemo, useState } from "react";
-import { useConnectionStatus } from "@/providers/connection-provider";
-import { usePolkadotContext } from "@/providers/polkadot-provider";
 
 export function ChainInfo() {
-  const { activeChain } = usePolkadotContext();
-  const { connectionStatus, clientType, blockNumber } = useConnectionStatus();
+  const activeChain = useActiveChain();
+  const isConnected = useIsConnected();
+  const blockNumber = useBlockNumber();
   const [isOpen, setIsOpen] = useState(false);
 
   const Trigger = useMemo(() => {
     return (
       <div className="tabular-nums font-light h-6 border-foreground/20 border rounded-md px-2 text-[12px] cursor-default">
-        {connectionStatus === "connected" ? (
+        {isConnected && blockNumber ? (
           <>
             <span className="block rounded-full w-2 h-2 bg-green-400 animate-pulse mr-1" />
-          </>
-        ) : connectionStatus === "error" ? (
-          <>
-            <span className="block rounded-full w-2.5 h-2.5 bg-red-400" />
+            {blockNumber && (
+              <span className="text-[10px]">{`#${blockNumber}`}</span>
+            )}
           </>
         ) : (
           <>
             <span className="block rounded-full w-2 h-2 bg-yellow-400 animate-pulse" />
-            &nbsp; connecting to {activeChain?.name} via {clientType}
+            &nbsp; connecting to {activeChain?.name} via{" "}
+            {activeChain?.providers[0]}
           </>
-        )}
-        {connectionStatus === "connected" && blockNumber && (
-          <span className="text-[10px]">{`#${blockNumber}`}</span>
         )}
       </div>
     );
-  }, [connectionStatus, blockNumber, activeChain, clientType]);
+  }, [isConnected, activeChain, blockNumber]);
 
   const Content = useMemo(() => {
     return (
       <>
-        {connectionStatus === "connected" ? (
+        {isConnected ? (
           <>
-            connected to <b>{activeChain?.name}</b> via {clientType}
+            connected to <b>{activeChain?.name}</b> via{" "}
+            {activeChain?.providers[0]}
           </>
-        ) : connectionStatus === "error" ? (
-          <>error: Connection error</>
         ) : (
           <>
-            connecting to {activeChain?.name} via {clientType}
+            connecting to {activeChain?.name} via {activeChain?.providers[0]}
           </>
         )}
       </>
     );
-  }, [activeChain, connectionStatus, clientType]);
+  }, [activeChain, isConnected]);
 
   return (
     <TooltipProvider>

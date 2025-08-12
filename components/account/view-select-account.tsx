@@ -1,25 +1,27 @@
 "use client";
 
-import { useAccounts, useWallets } from "@reactive-dot/react";
 import { ViewNavigationProps } from "../ui/multi-view-dialog";
-import { allSubstrateWallets } from "./wallets";
 import { DialogClose, DialogFooter } from "../ui/dialog";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { trimAddress } from "@/lib/utils";
 import Identicon from "@polkadot/react-identicon";
 import { ArrowLeft } from "lucide-react";
-import { useSelectedAccount } from "@/providers/selected-account-provider";
+import { useTypink } from "typink";
 
 export function ViewSelectAccount({ previous }: ViewNavigationProps) {
-  const accounts = useAccounts();
-  const wallets = useWallets();
-  const { selectedAccount, setSelectedAccount } = useSelectedAccount();
+  const {
+    accounts,
+    wallets,
+    connectedWallet,
+    connectedAccount,
+    setConnectedAccount,
+  } = useTypink();
 
   return (
     <>
       <div className="flex flex-col gap-2 overflow-y-scroll scroll-shadows max-h-[60vh] min-h-[100px]">
-        {wallets.map((wallet) => {
+        {/* {wallets.map((wallet) => {
           const walletMetadata = allSubstrateWallets.find(
             (w) => w.id === wallet.name,
           );
@@ -29,55 +31,49 @@ export function ViewSelectAccount({ previous }: ViewNavigationProps) {
             (account) =>
               // Match accounts to their specific wallet by checking account.wallet property
               account.wallet === wallet,
-          );
-
-          return (
-            <div key={wallet.name}>
-              {walletAccounts.map((account) => (
-                <DialogClose asChild key={account.address}>
-                  <Button
-                    variant={
-                      selectedAccount?.address === account.address
-                        ? "secondary"
-                        : "ghost"
-                    }
-                    className="w-full flex flex-row h-auto justify-start items-center gap-2 px-2"
-                    onClick={() => {
-                      setSelectedAccount(account);
-                    }}
-                  >
-                    <div className="relative inline-block">
-                      {walletMetadata?.logoUrls[0] && (
-                        <div className="rounded-full overflow-hidden border-2 border-background h-6 w-6 absolute bottom-0 right-0 shadow-md z-10 bg-background">
-                          <Image
-                            src={walletMetadata.logoUrls[0]}
-                            alt={wallet.name}
-                            width={32}
-                            height={32}
-                          />
-                        </div>
-                      )}
-                      <div className="rounded-full overflow-hidden border-background w-12 h-12 relative">
-                        <Identicon
-                          value={account.address}
-                          size={64}
-                          theme="polkadot"
-                          className="w-12 h-12 [&>svg]:!h-full [&>svg]:!w-full [&>svg>circle:first-child]:fill-none"
-                        />
-                      </div>
+          ); */}
+        <div key={connectedWallet?.id}>
+          {accounts.map((account) => (
+            <DialogClose asChild key={account.address}>
+              <Button
+                variant={
+                  connectedAccount?.address === account.address
+                    ? "secondary"
+                    : "ghost"
+                }
+                className="w-full flex flex-row h-auto justify-start items-center gap-2 px-2"
+                onClick={() => {
+                  setConnectedAccount(account);
+                }}
+              >
+                <div className="relative inline-block">
+                  {connectedWallet?.logo && (
+                    <div className="rounded-full overflow-hidden border-2 border-background h-6 w-6 absolute bottom-0 right-0 shadow-md z-10 bg-background">
+                      <Image
+                        src={connectedWallet.logo}
+                        alt={connectedWallet.id}
+                        width={32}
+                        height={32}
+                      />
                     </div>
-                    <div className="flex flex-col justify-start items-start">
-                      <span className="font-bold">{account.name}</span>
-                      {account.address && (
-                        <div>{trimAddress(account.address)}</div>
-                      )}
-                    </div>
-                  </Button>
-                </DialogClose>
-              ))}
-            </div>
-          );
-        })}
+                  )}
+                  <div className="rounded-full overflow-hidden border-background w-12 h-12 relative">
+                    <Identicon
+                      value={account.address}
+                      size={64}
+                      theme="polkadot"
+                      className="w-12 h-12 [&>svg]:!h-full [&>svg]:!w-full [&>svg>circle:first-child]:fill-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col justify-start items-start">
+                  <span className="font-bold">{account.name}</span>
+                  {account.address && <div>{trimAddress(account.address)}</div>}
+                </div>
+              </Button>
+            </DialogClose>
+          ))}
+        </div>
       </div>
       <DialogFooter className="pt-4">
         <Button

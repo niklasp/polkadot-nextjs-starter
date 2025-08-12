@@ -1,18 +1,18 @@
 "use client";
-import { SuspendingTxButton } from "@/components/chain-ui/tx-button";
-import { Binary } from "polkadot-api";
-import { useCallback } from "react";
-import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { useTypedApi } from "@reactive-dot/react";
+import { TxButton } from "@/components/chain-ui/tx-button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useClient, useTypink } from "typink";
 
 export function ExtrinsicInfoCards() {
-  // Transaction builder - typed to match SuspendingTxButton's expected type
-  const remarkTxBuilder = useCallback(
-    (tx: ReturnType<typeof useTypedApi>["tx"]) =>
-      tx.System.remark({
-        remark: Binary.fromText("Hello from polkadot-next-js-starter!"),
-      }),
-    [],
+  const { client } = useTypink();
+
+  const tx = client?.tx.system.remarkWithEvent(
+    "Hello, World from Polkadot Next.js Starter!",
   );
 
   return (
@@ -26,9 +26,7 @@ export function ExtrinsicInfoCards() {
             <CardHeader>
               <CardDescription>Remark</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums text-md">
-                <SuspendingTxButton txBuilder={remarkTxBuilder}>
-                  Create On Chain Remark
-                </SuspendingTxButton>
+                <TxButton tx={tx}>Create On Chain Remark</TxButton>
               </CardTitle>
             </CardHeader>
           </Card>

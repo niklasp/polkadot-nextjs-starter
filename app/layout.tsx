@@ -7,8 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Loader } from "lucide-react";
 import type { Metadata } from "next";
 import "./globals.css";
-import { PolkadotProvider } from "@/providers/polkadot-provider";
-import { ClientProvider } from "@/providers/client-provider";
+import { Providers } from "@/providers/providers";
 
 export const metadata: Metadata = {
   title: "Polkadot Next.js Starter",
@@ -25,13 +24,13 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
-        <ClientProvider defaultChainId="polkadot">
+        <Providers>
           <NavBar />
           <main className="min-h-screen">{children}</main>
           <Footer />
           <ChainInfo />
           <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
-        </ClientProvider>
+        </Providers>
         <Analytics />
       </body>
     </html>
