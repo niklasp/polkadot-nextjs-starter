@@ -16,7 +16,7 @@ export function WalletSelect({
   className?: string;
   placeholder?: string;
 }) {
-  const { accounts, wallets, connectedWallet, connectedAccount } = useTypink();
+  const { accounts, wallets, connectedWallets, connectedAccount } = useTypink();
 
   const views: DialogView[] = [
     {
@@ -36,7 +36,7 @@ export function WalletSelect({
 
   return (
     <MultiViewDialog
-      initialView={connectedWallet ? 1 : 0}
+      initialView={connectedWallets?.length ? 1 : 0}
       trigger={
         <Button
           variant="outline"

@@ -1,9 +1,5 @@
 // original source: https://github.com/polkadot-api/react-teleport-example/blob/main/src/lib/utils.ts
 
-export const decimalSeparatorDisplay = ".";
-export const decimalSeparatorsInput = [".", ","];
-export const decimalSeparatorRegex = ",|.";
-
 export const formatBalance = ({
   value,
   decimals,

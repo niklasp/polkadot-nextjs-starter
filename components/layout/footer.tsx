@@ -44,12 +44,15 @@ export function Footer() {
               next.js
             </AnimatedLink>
 
-            <AnimatedLink href="https://papi.how" className="font-mono">
-              polkadot-api (papi)
+            <AnimatedLink href="https://dedot.dev" className="font-mono">
+              dedot
             </AnimatedLink>
 
-            <AnimatedLink href="https://dedot.dev" className="font-mono">
-              reactive-dot
+            <AnimatedLink
+              href="https://docs.dedot.dev/typink"
+              className="font-mono"
+            >
+              typink
             </AnimatedLink>
           </div>
         </div>

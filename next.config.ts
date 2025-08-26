@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -15,6 +16,26 @@ const nextConfig: NextConfig = {
         hostname: "raw.githubusercontent.com",
         port: "",
         pathname: "/dedotdev/typink/refs/heads/main/assets/networks/**",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/Koniverse/SubWallet-ChainList/**",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "assethub-paseo.subscan.io",
+        port: "",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/dedotdev/typink/**",
         search: "",
       },
     ],

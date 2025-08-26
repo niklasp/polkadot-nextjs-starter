@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useTypink, type NetworkInfo, type InjectedAccount } from "typink";
-import { useBlockNumber } from "./use-block-number";
 
 export interface PolkadotHooks {
   useClient: () => ReturnType<typeof useTypink>["client"] | undefined;
@@ -9,7 +8,6 @@ export interface PolkadotHooks {
   useSupportedNetworks: () => NetworkInfo[];
   useIsConnected: () => boolean;
   useSelectedAccount: () => InjectedAccount | undefined;
-  useBlockNumber: () => number | null;
 }
 
 // Selector hooks that read directly from Typink
@@ -19,12 +17,9 @@ export function useClient() {
 }
 
 export function useChainId() {
-  const { networkId, setNetworkId } = useTypink();
-  const setChainId = useCallback(
-    (id: string) => setNetworkId(id),
-    [setNetworkId],
-  );
-  return { chainId: networkId, setChainId };
+  const { networkConnection, setNetwork } = useTypink();
+  const setChainId = useCallback((id: string) => setNetwork(id), [setNetwork]);
+  return { chainId: networkConnection.networkId, setChainId };
 }
 
 export function useActiveChain() {
@@ -59,5 +54,4 @@ export const polkadotHooks: PolkadotHooks = {
   useSupportedNetworks,
   useIsConnected,
   useSelectedAccount,
-  useBlockNumber,
 };

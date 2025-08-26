@@ -26,7 +26,8 @@ export function ChainSelect() {
       );
       if (network?.logo && network?.name !== "" && network?.logo !== "") {
         return (
-          <Image src={network.logo} alt={network.name} width={20} height={20} />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={network.logo} alt={network.name} width={20} height={20} />
         );
       } else {
         return "N/A";

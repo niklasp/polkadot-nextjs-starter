@@ -7,10 +7,9 @@ import { ArrowRight, Plus, Zap, ZapOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { ExtensionWallet, useTypink } from "typink";
-import { ClientOnly } from "@/components/ui/client-only";
 
 export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
-  const { wallets, accounts, connectedWallet, connectWallet, disconnect } =
+  const { wallets, accounts, connectedWallets, connectWallet, disconnect } =
     useTypink();
 
   const sortedWallets = wallets.sort((a, b) => {
@@ -24,7 +23,7 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
       {sortedWallets.map((wallet, index) => {
         console.log(wallet);
 
-        const isConnected = connectedWallet?.id === wallet.id;
+        const isConnected = connectedWallets?.some((w) => w.id === wallet.id);
 
         console.log(wallet.name);
 
@@ -63,13 +62,15 @@ export const ViewSelectWallet = ({ next }: ViewNavigationProps) => {
                 )}
               />
               <div className="flex flex-row items-center justify-start gap-2">
-                <Image
-                  src={wallet.logo ?? ""}
-                  alt={wallet.name}
-                  className="w-[32px] h-[32px]"
-                  width={32}
-                  height={32}
-                />
+                {wallet.logo && wallet.logo.startsWith("http") && (
+                  <Image
+                    src={wallet.logo}
+                    alt={wallet.name}
+                    className="w-[32px] h-[32px]"
+                    width={32}
+                    height={32}
+                  />
+                )}
                 <div className="flex flex-col items-start">
                   <span className="font-bold">{wallet.name}</span>
                   <span
