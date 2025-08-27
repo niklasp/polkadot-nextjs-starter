@@ -1,9 +1,8 @@
 import { fontUnbounded } from "@/fonts";
 import { cn } from "@/lib/utils";
-import { Link } from "@/components/ui/link";
 import { ChainInfoCards } from "@/components/info-cards/chain-info-cards";
 import { AccountInfoCards } from "@/components/info-cards/account-info-cards";
-import { ExtrinsicInfoCards } from "@/components/info-cards/extrinsic-info-cards";
+import { ExtrinsicCards } from "@/components/info-cards/extrinsic-cards";
 
 export default async function Home() {
   return (
@@ -22,7 +21,7 @@ export default async function Home() {
 
       <ChainInfoCards />
       <AccountInfoCards />
-      <ExtrinsicInfoCards />
+      <ExtrinsicCards />
     </main>
   );
 }

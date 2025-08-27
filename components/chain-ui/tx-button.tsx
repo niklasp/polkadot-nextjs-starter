@@ -1,31 +1,36 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  useActiveChain,
-  useIsConnected,
-  useSelectedAccount,
-} from "@/hooks/polkadot-hooks";
+
 import { formatBalance } from "@/lib/format-balance";
+import { txStatusNotification } from "@/lib/tx-status-notification";
 import { cn } from "@/lib/utils";
 import { type VariantProps } from "class-variance-authority";
-import { Loader2, PenLine, CheckCheck, Check, X } from "lucide-react";
+import type {
+  ISubmittableExtrinsic,
+  ISubmittableResult,
+  TxStatus,
+} from "dedot/types";
+import { Check, CheckCheck, Coins, Loader2, PenLine, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useClient, useTypink } from "typink";
-import type { TxStatus, ISubmittableExtrinsic } from "dedot/types";
+import { toast } from "sonner";
+import { useBalance, useTxFee, useTypink } from "typink";
+import type {
+  TxSignAndSendParameters,
+  UseTxReturnType,
+} from "typink/hooks/useTx";
+import type { NetworkId } from "typink/types";
 
-type ClientType = NonNullable<ReturnType<typeof useClient>["client"]>;
-type ChainTx = ClientType["tx"];
-
-interface TxButtonProps
-  extends React.ComponentProps<"button">,
+interface TxButtonProps<
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic = any,
+> extends React.ComponentProps<"button">,
     VariantProps<typeof buttonVariants> {
   children: React.ReactNode;
-  tx:
-    | ISubmittableExtrinsic
-    | ((tx: ChainTx) => ISubmittableExtrinsic | undefined)
-    | undefined;
+  tx: UseTxReturnType<TxFn>;
+  args?: Parameters<TxFn>;
+  networkId?: NetworkId;
   resultDisplayDuration?: number;
+  withNotification?: boolean;
   icons?: {
     default?: React.ReactNode;
     loading?: React.ReactNode;
@@ -35,13 +40,18 @@ interface TxButtonProps
   };
 }
 
-export function TxButton({
+export function TxButton<
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic = any,
+>({
   children,
   tx,
+  args,
+  networkId,
   className,
   variant,
   size,
   disabled,
+  withNotification = true,
   resultDisplayDuration = 5000,
   icons = {
     default: <PenLine className="w-4 h-4" />,
@@ -51,36 +61,46 @@ export function TxButton({
     error: <X className="w-4 h-4 text-red-500" />,
   },
   ...props
-}: TxButtonProps) {
-  const selectedAccount = useSelectedAccount();
-  const activeChain = useActiveChain();
-  const isConnected = useIsConnected();
-  const { client, defaultCaller } = useTypink();
+}: TxButtonProps<TxFn>) {
+  const { connectedAccount, supportedNetworks } = useTypink();
 
-  const extrinsic = useMemo(() => {
-    if (!tx) return null;
-    if (typeof tx !== "function") return tx;
-    if (!client) return null;
-    try {
-      return tx(client.tx) ?? null;
-    } catch (e) {
-      console.error("Failed to build extrinsic", e);
-      return null;
-    }
-  }, [client, tx]);
+  const isValidNetwork = useMemo(() => {
+    if (!networkId) return true;
+    return supportedNetworks.some((n) => n.id === networkId);
+  }, [networkId, supportedNetworks]);
+
+  const targetNetwork = useMemo(() => {
+    if (networkId) return supportedNetworks.find((n) => n.id === networkId);
+    return supportedNetworks[0];
+  }, [networkId, supportedNetworks]);
+
+  const feeInput: Parameters<typeof useTxFee<TxFn>>[0] = {
+    tx,
+    ...(args ? { args } : {}),
+    enabled: true,
+    networkId,
+  } as Parameters<typeof useTxFee<TxFn>>[0];
+
+  const {
+    fee,
+    isLoading: isFeeLoading,
+    error: feeError,
+  } = useTxFee<TxFn>(feeInput);
+
+  const balance = useBalance(connectedAccount?.address, {
+    networkId,
+  });
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [txStatus, setTxStatus] = useState<TxStatus | null>(null);
-  const [isAwaitingSignature, setIsAwaitingSignature] = useState(false);
 
-  const isError = !!submitError;
-  const isLoading =
-    isAwaitingSignature ||
-    (txStatus &&
-      ["Broadcasting", "Validated", "NoLongerInBestChain"].includes(
-        txStatus.type,
-      ));
+  const isError = !!submitError || !!feeError || !isValidNetwork;
+  const inProgress = tx.inProgress;
+  const inBestBlockProgress = tx.inBestBlockProgress;
+  const isLoading = inProgress;
+
+  const canCoverFee = !!balance && !!fee && balance.free >= fee;
 
   useEffect(() => {
     if (txStatus || isError) {
@@ -94,71 +114,70 @@ export function TxButton({
     setShowResult(false);
   }, [txStatus, isError, resultDisplayDuration]);
 
-  const [estimatedFees, setEstimatedFees] = useState<bigint | null>(null);
-  const [isEstimating, setIsEstimating] = useState(false);
-  const [feesError, setFeesError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const estimateAddress = selectedAccount?.address ?? defaultCaller;
-    if (!extrinsic || !estimateAddress) return;
-    let cancelled = false;
-    setIsEstimating(true);
-    setFeesError(null);
-
-    async function estimateFees() {
-      if (!extrinsic || !estimateAddress) return;
-      try {
-        const { partialFee } = await extrinsic.paymentInfo(estimateAddress);
-
-        console.log("partialFee", partialFee);
-        setEstimatedFees(partialFee);
-      } catch (e) {
-        console.error(e, "Failed to estimate fees");
-        setFeesError("Failed to estimate fees");
-      } finally {
-        setIsEstimating(false);
-      }
-    }
-
-    estimateFees();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [extrinsic, selectedAccount?.address, defaultCaller]);
-
   async function onExecute() {
-    if (!extrinsic || !selectedAccount?.address) return;
-    try {
-      setIsAwaitingSignature(true);
-      const result = await extrinsic.signAndSend(
-        selectedAccount.address,
-        async ({ status }) => {
-          console.log("status", status);
-          setTxStatus(status);
-        },
-      );
+    setSubmitError(null);
+    setTxStatus(null);
 
-      console.log("result", result);
+    let toastId: string | number | undefined;
+    if (withNotification) {
+      toastId = toast.loading("Waiting for signature...");
+    }
+    try {
+      const params: TxSignAndSendParameters<TxFn> = {
+        ...(args ? { args } : {}),
+        networkId,
+        callback: (result: ISubmittableResult) => {
+          setTxStatus(result.status as TxStatus);
+          withNotification
+            ? txStatusNotification(
+                result,
+                toastId as string,
+                targetNetwork?.subscanUrl ?? "",
+              )
+            : null;
+        },
+      } as TxSignAndSendParameters<TxFn>;
+      await tx.signAndSend(params);
     } catch (e) {
-      console.error(e);
+      const message = e instanceof Error ? e.message : String(e);
+      setSubmitError(message);
       setTxStatus(null);
-    } finally {
-      setIsAwaitingSignature(false);
     }
   }
 
   const isButtonDisabled =
     disabled ||
     isLoading ||
-    !isConnected ||
-    !client ||
-    !selectedAccount?.address ||
-    isEstimating ||
-    !!feesError;
+    !connectedAccount?.address ||
+    !!feeError ||
+    !isValidNetwork ||
+    !canCoverFee;
 
   return (
     <div className="inline-flex flex-col gap-1">
+      <div className="text-xs text-muted-foreground font-medium h-4 flex items-center justify-start">
+        {fee !== null ? (
+          <span className="flex items-center gap-1">
+            <Coins className="w-3 h-3" />
+            {formatBalance({
+              value: fee,
+              decimals: targetNetwork?.decimals ?? 10,
+              unit: targetNetwork?.symbol ?? "UNIT",
+              nDecimals: 4,
+            })}
+          </span>
+        ) : isFeeLoading ? (
+          <div className="flex items-center">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            <span>Estimating fees...</span>
+          </div>
+        ) : (
+          <span className="text-muted-foreground">
+            Fee calculation pending...
+          </span>
+        )}
+      </div>
+
       <Button
         onClick={onExecute}
         variant={variant}
@@ -172,15 +191,15 @@ export function TxButton({
             {children}
             {icons.loading}
           </>
+        ) : inBestBlockProgress ? (
+          <>
+            {children}
+            {icons.inBestBlock}
+          </>
         ) : txStatus && showResult && txStatus.type === "Finalized" ? (
           <>
             {children}
             {icons.finalized}
-          </>
-        ) : txStatus && txStatus.type === "BestChainBlockIncluded" ? (
-          <>
-            {children}
-            {icons.inBestBlock}
           </>
         ) : isError && showResult ? (
           <>
@@ -195,32 +214,17 @@ export function TxButton({
         )}
       </Button>
 
-      <div className="text-xs text-muted-foreground font-medium h-4 flex items-center">
-        {!isConnected ? (
-          <span className="text-muted-foreground">Connect to chain</span>
-        ) : !selectedAccount?.address && !defaultCaller ? (
+      <div className="text-xs font-medium h-4 flex items-center">
+        {!connectedAccount?.address ? (
           <span className="text-amber-500">Please select an account</span>
-        ) : estimatedFees !== null ? (
-          <span>
-            Fee:{" "}
-            {formatBalance({
-              value: estimatedFees,
-              decimals: activeChain?.decimals ?? 10,
-              unit: activeChain?.symbol ?? "UNIT",
-              nDecimals: 4,
-            })}
-          </span>
-        ) : feesError ? (
-          <span className="text-red-500">{feesError}</span>
-        ) : isEstimating ? (
-          <div className="flex items-center">
-            <Loader2 className="w-3 h-3 animate-spin" />
-            <span>Estimating fees...</span>
-          </div>
+        ) : !isValidNetwork ? (
+          <span className="text-red-500">Invalid network</span>
+        ) : feeError ? (
+          <span className="text-red-500">{feeError}</span>
+        ) : fee !== null && !canCoverFee ? (
+          <span className="text-red-500">Insufficient balance for fee</span>
         ) : (
-          <span className="text-muted-foreground">
-            Fee calculation pending...
-          </span>
+          <span className="text-transparent">_</span>
         )}
       </div>
     </div>

@@ -7,11 +7,12 @@ import {
   paseo,
   paseoAssetHub,
   paseoPeople,
+  polkadot,
   TypinkProvider,
 } from "typink";
 import { ClientOnly } from "@/components/ui/client-only";
 
-export const SUPPORTED_NETWORKS = [paseo, paseoAssetHub, paseoPeople];
+export const SUPPORTED_NETWORKS = [paseo, paseoAssetHub, polkadot];
 
 export function Providers({
   children,
@@ -33,13 +34,7 @@ export function Providers({
           appName={appName}
           defaultCaller={defaultCaller}
           supportedNetworks={supportedNetworks}
-          defaultNetworkIds={
-            supportedNetworks?.map((network) => network.id) || [
-              paseo.id,
-              paseoAssetHub.id,
-              paseoPeople.id,
-            ]
-          }
+          defaultNetworkIds={supportedNetworks.map((network) => network.id)}
         >
           {children}
         </TypinkProvider>

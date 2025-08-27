@@ -8,7 +8,6 @@ import { trimAddress } from "@/lib/utils";
 import Identicon from "@polkadot/react-identicon";
 import { ArrowLeft } from "lucide-react";
 import { useTypink } from "typink";
-import { WalletAccount } from "@reactive-dot/core/wallets.js";
 
 export function ViewSelectAccount({ previous }: ViewNavigationProps) {
   const {

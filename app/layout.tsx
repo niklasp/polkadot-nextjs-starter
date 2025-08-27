@@ -29,7 +29,7 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
           <ChainInfo />
-          <Toaster position="bottom-center" icons={{ loading: <Loader /> }} />
+          <Toaster position="bottom-right" />
         </Providers>
         <Analytics />
       </body>

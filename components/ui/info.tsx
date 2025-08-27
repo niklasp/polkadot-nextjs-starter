@@ -2,7 +2,7 @@ export function Info({
   label,
   element,
 }: {
-  label: string;
+  label: React.ReactNode;
   element: React.ReactNode;
 }) {
   return (

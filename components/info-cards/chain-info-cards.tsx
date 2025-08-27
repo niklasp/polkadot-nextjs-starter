@@ -1,18 +1,6 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useActiveChain, useClient } from "@/hooks/polkadot-hooks";
-import {
-  ClientConnectionStatus,
-  useBlockInfo,
-  usePolkadotClient,
-  useTypink,
-} from "typink";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ClientConnectionStatus, useBlockInfo, useTypink } from "typink";
 import { Info } from "../ui/info";
 import { Skeleton } from "../ui/skeleton";
 
