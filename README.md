@@ -1,12 +1,24 @@
 # Polkadot Next.js Starter
 
-This project is a starter template for building frontend applications on the
-Polkadot network using [papi](https://papi.how) for interacting with polkadot
-chains and Next.js. as a react framework. It includes essential tools and
-configurations to streamline development.
+This repository provides a landing (on `main`) and two full, cloneable templates for building Polkadot dApps:
+
+- papi + reactive-dot (branch: `papi`)
+- dedot + typink (branch: `typink`)
 
 ![Polkadot Next.js Starter](public/polkadot-nextjs-starter.png)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fniklasp%2Fpolkadot-nextjs-starter&project-name=polkadot-nextjs-starter&repository-name=polkadot-nextjs-starter&demo-title=Polkadot%20Next.js%20Starter%20&demo-description=A%20template%20to%20get%20started%20building%20apps%20powered%20by%20Polkadot&demo-url=https%3A%2F%2Fpolkadot-nextjs-starter.vercel.app&demo-image=https%3A%2F%2Fpolkadot-nextjs-starter.vercel.app%2Fpolkadot-nextjs-starter.png)
+
+## Deploy a template
+
+Choose a branch to clone and deploy with one click:
+
+[![Deploy papi (reactive-dot)](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fniklasp%2Fpolkadot-nextjs-starter%2Ftree%2Fpapi)
+
+[![Deploy typink (dedot)](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fniklasp%2Fpolkadot-nextjs-starter%2Ftree%2Ftypink)
+
+Branch links:
+
+- papi: <https://github.com/niklasp/polkadot-nextjs-starter/tree/papi>
+- typink: <https://github.com/niklasp/polkadot-nextjs-starter/tree/typink>
 
 ## Features
 

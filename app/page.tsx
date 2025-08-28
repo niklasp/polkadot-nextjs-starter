@@ -51,7 +51,7 @@ export default async function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 flex-1">
-            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-md border">
+            <div className="relative w-full aspect-[16/9] ">
               <Link href="https://papi-reactive-dot.polkadot-nextjs.com">
                 <Image
                   src="/polkadot-nextjs-starter.png"
