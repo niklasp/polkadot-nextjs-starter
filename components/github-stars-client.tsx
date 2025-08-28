@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { Github, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -51,12 +51,12 @@ export function GithubStarsClient({ repo }: GithubStarsClientProps) {
       <Button
         size="sm"
         className="h-8 px-3 gap-2 text-xs fixed top-4 right-4 z-50"
+        variant="outline"
       >
-        <Star className="w-2 h-2 fill-amber-400 stroke-amber-400" />
-        Star on github
-        <span className="tabular-nums bg-white rounded-md  text-xs text-black py-0.5 px-1">
-          {label}
-        </span>
+        <Github className="w-4 h-4" />
+
+        {label}
+        <Star className="w-4 h-4" />
       </Button>
     </Link>
   );

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, Github, Triangle } from "lucide-react";
 import Image from "next/image";
-import { GithubStars } from "@/components/layout/github-stars";
+import { GithubStars } from "@/components/github-stars";
 
 export default async function Home() {
   const repoUrl = "https://github.com/niklasp/polkadot-nextjs-starter";
@@ -24,13 +24,13 @@ export default async function Home() {
       <GithubStars />
       <h1
         className={cn(
-          "text-5xl lg:text-6xl font-light pt-10",
+          "text-5xl lg:text-6xl font-light pt-30",
           fontUnbounded.className,
         )}
       >
         Polkadot Next.js Starter
       </h1>
-      <p className="text-center text-muted-foreground text-lg max-w-prose">
+      <p className="text-center text-md max-w-prose">
         Choose a template to start. Each card links to a specific branch for
         one-click deploy.
       </p>
@@ -51,13 +51,15 @@ export default async function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 flex-1">
-            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-md border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/polkadot-nextjs-starter.png"
-                alt="papi template screenshot"
-                className="object-cover w-full h-full"
-              />
+            <div className="relative w-full aspect-[16/9] ">
+              <Link href="https://papi-reactive-dot.polkadot-nextjs.com">
+                <Image
+                  src="/polkadot-nextjs-starter.png"
+                  alt="papi template screenshot"
+                  width={1000}
+                  height={1000}
+                />
+              </Link>
             </div>
             <ul className="mt-4 text-sm text-muted-foreground list-disc list-inside space-y-1">
               <li>Next.js 15 App Router + RSC</li>
@@ -67,7 +69,10 @@ export default async function Home() {
             </ul>
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
-            <Link href="/papi" className="inline-flex">
+            <Link
+              href="https://papi-reactive-dot.polkadot-nextjs.com"
+              className="inline-flex"
+            >
               <Button>
                 <Eye className="w-4 h-4" /> View template
               </Button>
@@ -82,7 +87,7 @@ export default async function Home() {
             </Link>
             <Link href={deployPapi} className="hidden sm:inline-flex">
               <Button>
-                <Triangle className="w-4 h-4 fill-white" /> Deploy
+                <Triangle className="w-4 h-4 fill-black" /> Deploy
               </Button>
             </Link>
           </CardFooter>
@@ -104,7 +109,7 @@ export default async function Home() {
           </CardHeader>
           <CardContent>
             <div className="relative w-full aspect-[16/9]">
-              <Link href="/typink">
+              <Link href="https://dedot-typink.polkadot-nextjs.com">
                 <Image
                   src="/polkadot-nextjs-starter-dedot-typink.png"
                   alt="typink template screenshot"
@@ -118,10 +123,15 @@ export default async function Home() {
               <li>Typink provider, fees, tx hooks</li>
               <li>Shadcn UI, Radix, Tailwind</li>
               <li>Multi-chain support</li>
+              <li>TxButton component</li>
+              <li>TxNotification component</li>
             </ul>
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
-            <Link href="/typink" className="inline-flex">
+            <Link
+              href="https://dedot-typink.polkadot-nextjs.com"
+              className="inline-flex"
+            >
               <Button>
                 <Eye className="w-4 h-4" /> View template
               </Button>
@@ -136,7 +146,7 @@ export default async function Home() {
             </Link>
             <Link href={deployTypink} className="hidden sm:inline-flex">
               <Button>
-                <Triangle className="w-4 h-4 fill-white" /> Deploy
+                <Triangle className="w-4 h-4 fill-black" /> Deploy
               </Button>
             </Link>
           </CardFooter>
