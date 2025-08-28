@@ -1,9 +1,6 @@
 import { fontUnbounded } from "@/fonts";
 import { cn } from "@/lib/utils";
 import { Link } from "@/components/ui/link";
-import { ChainInfoCards } from "@/components/info-cards/chain-info-cards";
-import { AccountInfoCards } from "@/components/info-cards/account-info-cards";
-import { ExtrinsicInfoCards } from "@/components/info-cards/extrinsic-info-cards";
 
 export default async function Home() {
   return (
@@ -20,9 +17,7 @@ export default async function Home() {
         A starter project for your next Polkadot dApp.
       </p>
 
-      <ChainInfoCards />
-      <AccountInfoCards />
-      <ExtrinsicInfoCards />
+      <p>This is a template for building Polkadot dApps with Next.js.</p>
     </main>
   );
 }
