@@ -11,7 +11,14 @@ import type {
   ISubmittableResult,
   TxStatus,
 } from "dedot/types";
-import { Check, CheckCheck, Coins, Loader2, PenLine, X } from "lucide-react";
+import {
+  CheckCircle,
+  CheckCheck,
+  Coins,
+  Loader2,
+  PenLine,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useBalance, useTxFee, useTypink } from "typink";
@@ -57,7 +64,9 @@ export function TxButton<
     default: <PenLine className="w-4 h-4" />,
     loading: <Loader2 className="w-4 h-4 animate-spin" />,
     finalized: <CheckCheck className="w-4 h-4 text-green-500" />,
-    inBestBlock: <Check className="w-4 h-4 text-green-500 animate-pulse" />,
+    inBestBlock: (
+      <CheckCircle className="w-4 h-4 text-green-500 animate-pulse" />
+    ),
     error: <X className="w-4 h-4 text-red-500" />,
   },
   ...props
@@ -132,12 +141,18 @@ export function TxButton<
             ? txStatusNotification(
                 result,
                 toastId as string,
-                targetNetwork?.subscanUrl ?? "",
+                targetNetwork?.subscanUrl ?? targetNetwork?.pjsUrl ?? undefined,
               )
             : null;
         },
       } as TxSignAndSendParameters<TxFn>;
-      await tx.signAndSend(params);
+      await tx.signAndSend(params).catch((e) => {
+        setSubmitError(e instanceof Error ? e.message : String(e));
+        setTxStatus(null);
+        if (withNotification) {
+          toast.dismiss(toastId as string);
+        }
+      });
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setSubmitError(message);
@@ -173,7 +188,7 @@ export function TxButton<
           </div>
         ) : (
           <span className="text-muted-foreground">
-            Fee calculation pending...
+            Fee calculation pending... {fee} {feeError} {isFeeLoading}
           </span>
         )}
       </div>
@@ -237,7 +252,9 @@ export function TxButtonSkeleton({
     default: <PenLine className="w-4 h-4" />,
     loading: <Loader2 className="w-4 h-4 animate-spin" />,
     finalized: <CheckCheck className="w-4 h-4 text-green-500" />,
-    inBestBlock: <Check className="w-4 h-4 text-green-500 animate-pulse" />,
+    inBestBlock: (
+      <CheckCircle className="w-4 h-4 text-green-500 animate-pulse" />
+    ),
     error: <X className="w-4 h-4 text-red-500" />,
   },
   ...props
