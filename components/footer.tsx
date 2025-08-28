@@ -4,7 +4,7 @@ import { PolkadotLogo } from "@/components/ui/polkadot-logo";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-black/50">
+    <footer className="bg-gradient-to-t from-black/50 to-transparent absolute bottom-0 w-full left-0 z-10">
       <div className="container mx-auto px-6 sm:px-8 py-8">
         <div className="text-center w-full flex flex-col items-center justify-center gap-4">
           <div className="text-xs text-muted-foreground">

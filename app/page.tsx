@@ -13,11 +13,14 @@ import Link from "next/link";
 import { Eye, Github, Triangle } from "lucide-react";
 import Image from "next/image";
 import { GithubStars } from "@/components/github-stars";
+import { CopyButton } from "@/components/ui/copy-button";
 
 export default async function Home() {
   const repoUrl = "https://github.com/niklasp/polkadot-nextjs-starter";
   const deployPapi = `https://vercel.com/new/clone?repository-url=${encodeURIComponent(`${repoUrl}/tree/papi`)}`;
   const deployTypink = `https://vercel.com/new/clone?repository-url=${encodeURIComponent(`${repoUrl}/tree/typink`)}`;
+  const clonePapi = `git clone --branch papi ${repoUrl}.git && cd polkadot-nextjs-starter`;
+  const cloneTypink = `git clone --branch typink ${repoUrl}.git && cd polkadot-nextjs-starter`;
 
   return (
     <main className="flex min-h-screen p-6 sm:p-8 pb-20 flex-col gap-[32px] row-start-2 items-center relative">
@@ -35,7 +38,7 @@ export default async function Home() {
         one-click deploy.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mt-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-5xl mt-2">
         <Card>
           <CardHeader>
             <CardTitle>papi + reactive-dot</CardTitle>
@@ -50,14 +53,14 @@ export default async function Home() {
               primitives.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4 flex-1">
+          <CardContent className="flex flex-col gap-4 flex-1 justify-between">
             <div className="relative w-full aspect-[16/9] ">
               <Link href="https://papi-reactive-dot.polkadot-nextjs.com">
                 <Image
                   src="/polkadot-nextjs-starter.png"
                   alt="papi template screenshot"
                   width={1000}
-                  height={1000}
+                  height={800}
                 />
               </Link>
             </div>
@@ -67,6 +70,13 @@ export default async function Home() {
               <li>papi integration with reactive-dot hooks</li>
               <li>Shadcn UI, Radix, Tailwind</li>
             </ul>
+            <div className="mt-2 rounded-md border bg-muted/20 p-2 text-xs font-mono flex items-center justify-between gap-2">
+              <div className="truncate">
+                <span className="opacity-70">$ </span>
+                <span className="truncate">{clonePapi}</span>
+              </div>
+              <CopyButton value={clonePapi} />
+            </div>
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
             <Link
@@ -114,7 +124,7 @@ export default async function Home() {
                   src="/polkadot-nextjs-starter-dedot-typink.png"
                   alt="typink template screenshot"
                   width={1000}
-                  height={1000}
+                  height={800}
                 />
               </Link>
             </div>
@@ -126,6 +136,13 @@ export default async function Home() {
               <li>TxButton component</li>
               <li>TxNotification component</li>
             </ul>
+            <div className="mt-2 rounded-md border bg-muted/20 p-2 text-xs font-mono flex items-center justify-between gap-2">
+              <div className="truncate">
+                <span className="opacity-70">$ </span>
+                <span className="truncate">{cloneTypink}</span>
+              </div>
+              <CopyButton value={cloneTypink} />
+            </div>
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
             <Link

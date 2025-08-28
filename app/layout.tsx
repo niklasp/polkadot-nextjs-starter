@@ -18,9 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased dark`}
+        className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased dark relative`}
       >
-        <div className="relative z-10 overflow-hidden pb-24">
+        <div className="relative z-10 overflow-hidden pb-48">
           <div className="absolute inset-0 h-[200vh] overflow-hidden">
             <Aurora
               colorStops={["#7916F3", "#7916F3", "#7916F3", "#000000"]}
