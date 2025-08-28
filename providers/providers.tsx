@@ -6,7 +6,6 @@ import {
   type NetworkInfo,
   paseo,
   paseoAssetHub,
-  paseoPeople,
   polkadot,
   TypinkProvider,
 } from "typink";
