@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, Github, Triangle } from "lucide-react";
 import Image from "next/image";
-import { GithubStars } from "@/components/layout/github-stars";
+import { GithubStars } from "@/components/github-stars";
 
 export default async function Home() {
   const repoUrl = "https://github.com/niklasp/polkadot-nextjs-starter";

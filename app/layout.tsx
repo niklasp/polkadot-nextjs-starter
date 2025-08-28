@@ -1,4 +1,5 @@
 import { fontMono, fontSans } from "@/fonts";
+import { Footer } from "@/components/layout/footer";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -19,6 +20,7 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
         <main className="min-h-screen">{children}</main>
+        <Footer />
         <Analytics />
       </body>
     </html>
