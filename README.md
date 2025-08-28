@@ -32,7 +32,7 @@ configurations to streamline development.
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/niklasp/polkadot-nextjs-starter.git
+   git clone --branch papi https://github.com/niklasp/polkadot-nextjs-starter.git
    ```
 
 2. Install dependencies:
