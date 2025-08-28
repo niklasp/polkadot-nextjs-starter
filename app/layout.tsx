@@ -1,5 +1,5 @@
 import { fontMono, fontSans } from "@/fonts";
-import { Footer } from "@/components/layout/footer";
+import { Footer } from "@/components/footer";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import "./globals.css";
