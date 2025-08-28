@@ -8,8 +8,8 @@ export function RemarkButton({ networkId }: { networkId: NetworkId }) {
     <TxButton
       tx={remarkTx}
       args={["Hello, World from Polkadot Next.js Starter!"]}
-      size="lg"
       networkId={networkId}
+      size="sm"
     >
       Create On Chain Remark
     </TxButton>

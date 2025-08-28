@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useTypink, useTx, ClientConnectionStatus } from "typink";
+import { useTypink, ClientConnectionStatus } from "typink";
 import { RemarkButton } from "../chain-ui/remark-button";
 import { cn } from "@/lib/utils";
 

@@ -3,7 +3,11 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 
 import { formatBalance } from "@/lib/format-balance";
-import { txStatusNotification } from "@/lib/tx-status-notification";
+import {
+  txStatusNotification,
+  beginTxStatusNotification,
+  cancelTxStatusNotification,
+} from "@/lib/tx-status-notification";
 import { cn } from "@/lib/utils";
 import { type VariantProps } from "class-variance-authority";
 import type {
@@ -126,9 +130,7 @@ export function TxButton<
     setTxStatus(null);
 
     const toastId = withNotification
-      ? toast.loading("Waiting for signature...", {
-          description: "Please sign the transaction in your wallet",
-        })
+      ? beginTxStatusNotification(undefined, targetNetwork)
       : undefined;
 
     try {
@@ -145,11 +147,8 @@ export function TxButton<
       } as TxSignAndSendParameters<TxFn>;
       await tx.signAndSend(params);
     } catch (e) {
-      if (withNotification)
-        toast.info("Transaction cancelled", {
-          id: toastId as string,
-          description: "",
-        });
+      if (withNotification && toastId)
+        cancelTxStatusNotification(toastId as string, targetNetwork);
       setSubmitError(e instanceof Error ? e.message : String(e));
       setTxStatus(null);
     }
