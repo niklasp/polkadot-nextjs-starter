@@ -1,13 +1,15 @@
 import { ISubmittableResult } from "dedot/types";
 import { Check, CheckCheck, CheckIcon } from "lucide-react";
 import { toast } from "sonner";
+import { NetworkInfo } from "typink";
 
 export function txStatusNotification(
   result: ISubmittableResult,
   toastId: string = "tx-status-notification",
-  explorerUrl: string | undefined,
+  network: NetworkInfo | undefined,
 ) {
   const { status } = result;
+  const explorerUrl = network?.subscanUrl ?? network?.pjsUrl;
 
   const action =
     result.txHash && explorerUrl
@@ -24,20 +26,24 @@ export function txStatusNotification(
     case "Validated":
       toast.loading("Transaction submitted", {
         id: toastId,
+        description: "Waiting for confirmation...",
       });
       break;
     case "BestChainBlockIncluded":
-      toast.message("Transaction included in best block", {
+      toast.loading("Transaction included in block", {
         id: toastId,
-        icon: <CheckIcon className="mr-2 w-5 h-5 animate-pulse" />,
         action,
+        description: "Waiting for finalization...",
       });
       break;
     case "Finalized":
       toast.success("Transaction finalized", {
         id: toastId,
-        icon: <CheckCheck className="mr-2 w-5 h-5" />,
+        icon: <CheckCheck className="w-5 h-5" />,
         action,
+        description: "",
+        duration: 10000,
+        closeButton: true,
       });
       break;
     case "Invalid":

@@ -63,11 +63,9 @@ export function TxButton<
   icons = {
     default: <PenLine className="w-4 h-4" />,
     loading: <Loader2 className="w-4 h-4 animate-spin" />,
-    finalized: <CheckCheck className="w-4 h-4 text-green-500" />,
-    inBestBlock: (
-      <CheckCircle className="w-4 h-4 text-green-500 animate-pulse" />
-    ),
-    error: <X className="w-4 h-4 text-red-500" />,
+    finalized: <CheckCheck className="w-4 h-4" />,
+    inBestBlock: <CheckCircle className="w-4 h-4" />,
+    error: <X className="w-4 h-4" />,
   },
   ...props
 }: TxButtonProps<TxFn>) {
@@ -127,35 +125,32 @@ export function TxButton<
     setSubmitError(null);
     setTxStatus(null);
 
-    let toastId: string | number | undefined;
-    if (withNotification) {
-      toastId = toast.loading("Waiting for signature...");
-    }
+    const toastId = withNotification
+      ? toast.loading("Waiting for signature...", {
+          description: "Please sign the transaction in your wallet",
+        })
+      : undefined;
+
     try {
       const params: TxSignAndSendParameters<TxFn> = {
         ...(args ? { args } : {}),
         networkId,
         callback: (result: ISubmittableResult) => {
-          setTxStatus(result.status as TxStatus);
+          setTxStatus(result.status);
+          console.log("tx status", result);
           withNotification
-            ? txStatusNotification(
-                result,
-                toastId as string,
-                targetNetwork?.subscanUrl ?? targetNetwork?.pjsUrl ?? undefined,
-              )
+            ? txStatusNotification(result, toastId as string, targetNetwork)
             : null;
         },
       } as TxSignAndSendParameters<TxFn>;
-      await tx.signAndSend(params).catch((e) => {
-        setSubmitError(e instanceof Error ? e.message : String(e));
-        setTxStatus(null);
-        if (withNotification) {
-          toast.dismiss(toastId as string);
-        }
-      });
+      await tx.signAndSend(params);
     } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      setSubmitError(message);
+      if (withNotification)
+        toast.info("Transaction cancelled", {
+          id: toastId as string,
+          description: "",
+        });
+      setSubmitError(e instanceof Error ? e.message : String(e));
       setTxStatus(null);
     }
   }
@@ -251,11 +246,9 @@ export function TxButtonSkeleton({
   icons = {
     default: <PenLine className="w-4 h-4" />,
     loading: <Loader2 className="w-4 h-4 animate-spin" />,
-    finalized: <CheckCheck className="w-4 h-4 text-green-500" />,
-    inBestBlock: (
-      <CheckCircle className="w-4 h-4 text-green-500 animate-pulse" />
-    ),
-    error: <X className="w-4 h-4 text-red-500" />,
+    finalized: <CheckCheck className="w-4 h-4" />,
+    inBestBlock: <CheckCircle className="w-4 h-4" />,
+    error: <X className="w-4 h-4" />,
   },
   ...props
 }: React.ComponentProps<"button"> &
