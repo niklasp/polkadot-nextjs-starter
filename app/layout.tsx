@@ -2,6 +2,7 @@ import { fontMono, fontSans } from "@/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import "./globals.css";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "Polkadot Next.js Starter",
@@ -19,6 +20,7 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
         {children}
+        <Footer />
         <Analytics />
       </body>
     </html>
