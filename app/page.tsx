@@ -123,6 +123,8 @@ export default async function Home() {
               <li>Typink provider, fees, tx hooks</li>
               <li>Shadcn UI, Radix, Tailwind</li>
               <li>Multi-chain support</li>
+              <li>TxButton component</li>
+              <li>TxNotification component</li>
             </ul>
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
