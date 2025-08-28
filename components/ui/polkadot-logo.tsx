@@ -27,7 +27,13 @@ export function PolkadotLogo({
   return (
     <div className="flex items-center">
       {withPoweredBy && <span className="text-sm font-light">Powered by</span>}
-      <Image src={logo} alt="Polkadot Logo" width={100} height={28} />
+      <Image
+        src={logo}
+        alt="Polkadot Logo"
+        width={100}
+        height={28}
+        className="dark:invert saturate-0"
+      />
     </div>
   );
 }
