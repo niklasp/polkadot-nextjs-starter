@@ -1,4 +1,4 @@
-# Polkadot Next.js Starter
+# Polkadot Next.js Starter (dedot + typink)
 
 This project is a starter template for building frontend applications on the
 Polkadot network using [dedot](https://dedot.dev) for interacting with polkadot
