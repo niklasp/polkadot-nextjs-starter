@@ -55,7 +55,7 @@ export default async function Home() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4 flex-1 justify-between">
             <div className="relative w-full aspect-[16/9] ">
-              <Link href="https://papi-reactive-dot.polkadot-nextjs.com">
+              <Link href="https://papi-reactive-dot.polkadot-nextjs.com?_vercel_share=yQzTrBhxXxJAkNKqEpZ1jza6phuStQ1O">
                 <Image
                   src="/polkadot-nextjs-starter.png"
                   alt="papi template screenshot"
@@ -80,7 +80,7 @@ export default async function Home() {
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
             <Link
-              href="https://papi-reactive-dot.polkadot-nextjs.com"
+              href="https://papi-reactive-dot.polkadot-nextjs.com?_vercel_share=yQzTrBhxXxJAkNKqEpZ1jza6phuStQ1O"
               className="inline-flex"
             >
               <Button>
@@ -119,7 +119,7 @@ export default async function Home() {
           </CardHeader>
           <CardContent>
             <div className="relative w-full aspect-[16/9]">
-              <Link href="https://dedot-typink.polkadot-nextjs.com">
+              <Link href="https://dedot-typink.polkadot-nextjs.com?_vercel_share=Tp9LVl5G6C0Df0lU3tAQAum278zHP1kW">
                 <Image
                   src="/polkadot-nextjs-starter-dedot-typink.png"
                   alt="typink template screenshot"
@@ -146,7 +146,7 @@ export default async function Home() {
           </CardContent>
           <CardFooter className="flex items-center gap-2 flex-wrap">
             <Link
-              href="https://dedot-typink.polkadot-nextjs.com"
+              href="https://dedot-typink.polkadot-nextjs.com?_vercel_share=Tp9LVl5G6C0Df0lU3tAQAum278zHP1kW"
               className="inline-flex"
             >
               <Button>
